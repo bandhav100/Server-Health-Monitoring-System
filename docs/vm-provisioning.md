@@ -1,14 +1,14 @@
 # Virtual Machine Provisioning Report
 
--->Project
+##Project
 
 Server Health Monitoring System
 
--->Sprint
+##Sprint
 
 Sprint-1
 
--->Objective
+##Objective
 
 Provision a dedicated Ubuntu Server virtual machine to host monitoring and observability tools required for the Server Health Monitoring System.
 
