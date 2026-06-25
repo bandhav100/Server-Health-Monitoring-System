@@ -1,0 +1,29 @@
+Tailscale Installation and Configuration
+
+Sprint: 15-06-2026 to 28-06-2026
+
+Objective:
+To establish secure connectivity between project components using Tailscale's mesh VPN network.
+
+Work Performed:
+1. Downloaded and installed Tailscale on the local machine.
+2. Signed in using the project account.
+3. Connected the device to the Tailscale network.
+4. Verified successful node registration in the Tailscale admin console.
+5. Tested connectivity using the assigned Tailscale IP address.
+6. Confirmed secure communication between network nodes.
+
+Tools Used:
+- Tailscale
+- Windows Operating System
+- GitHub
+
+Outcome:
+- Secure private network established.
+- Device successfully joined the Tailscale network.
+- Encrypted communication enabled between connected nodes.
+- Foundation prepared for remote monitoring and management of the Server Health Monitoring System.
+
+Future Integration:
+- Connect Prometheus and Grafana services across devices using Tailscale networking.
+- Enable secure access to monitoring dashboards without exposing public ports.
