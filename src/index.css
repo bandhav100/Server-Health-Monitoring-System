@@ -1,0 +1,64 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+  /* Base surfaces */
+  --color-background: #0a0f1e;
+  --color-foreground: #e5e9f0;
+
+  --color-sidebar: #0b1224;
+  --color-sidebar-foreground: #cbd5e1;
+
+  --color-topbar: #131c31;
+
+  --color-card: #131c31;
+  --color-card-foreground: #e5e9f0;
+  --color-card-muted: #1a2540;
+
+  /* Grafana-style dark panel */
+  --color-panel: #0d1117;
+  --color-panel-inner: #161b22;
+  --color-panel-border: #21262d;
+
+  --color-border: #1e293b;
+  --color-muted-foreground: #94a3b8;
+
+  /* Brand + accents */
+  --color-primary: #3b82f6;
+  --color-primary-foreground: #ffffff;
+
+  --color-blue: #3b82f6;
+  --color-green: #22c55e;
+  --color-orange: #f97316;
+  --color-purple: #a855f7;
+  --color-yellow: #eab308;
+  --color-red: #ef4444;
+
+  --radius-card: 0.75rem;
+}
+
+html {
+  background-color: var(--color-background);
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Thin scrollbars for the dark theme */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #334155 transparent;
+}
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 9999px;
+}
