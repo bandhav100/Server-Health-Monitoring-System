@@ -1,0 +1,130 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import "./App.css";
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    font-family: 'Inter', sans-serif;
+    color: #111827;
+    background: #F7F9FC;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+  }
+
+  * {
+    @apply border-gray-200;
+  }
+
+  body {
+    @apply bg-[#F7F9FC] text-gray-900;
+    margin: 0;
+    min-width: 320px;
+    background: #F7F9FC;
+  }
+
+  #root {
+    @apply min-h-screen flex flex-col;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-100;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 rounded;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-400;
+}
+
+/* Utility classes */
+@layer components {
+  @media (max-width: 640px) {
+    .app-shell {
+      margin-left: 0 !important;
+    }
+  }
+
+  .page-heading {
+    @apply flex items-center gap-3 border-b border-slate-800 pb-5;
+  }
+
+  .page-heading h1 {
+    @apply text-2xl font-semibold tracking-tight text-zinc-50;
+  }
+
+  .page-heading p:not(.eyebrow) {
+    @apply text-sm text-slate-400 mt-1;
+  }
+
+  .eyebrow {
+    @apply text-[10px] uppercase tracking-[0.2em] text-zinc-500 font-semibold mb-1;
+  }
+
+  .icon-tile {
+    @apply w-11 h-11 rounded flex items-center justify-center;
+  }
+
+  .icon-tile svg {
+    @apply w-5 h-5;
+  }
+
+  .icon-tile.cyan {
+    @apply bg-cyan-400/10 text-cyan-300 border border-cyan-400/20;
+  }
+
+  .field-label {
+    @apply block text-sm text-slate-300;
+  }
+
+  .card {
+    @apply rounded-lg border border-white/10 bg-white/[0.035] shadow-[0_18px_60px_rgba(0,0,0,0.35)] backdrop-blur-xl;
+  }
+
+  .input-field {
+    @apply rounded-md border border-white/10 bg-white/[0.04] px-3 py-2 text-zinc-100 placeholder-zinc-600 focus:border-white/30 focus:outline-none focus:ring-1 focus:ring-white/20;
+  }
+
+  .btn-primary {
+    @apply rounded-md bg-white px-4 py-2 font-medium text-black hover:bg-zinc-200;
+  }
+
+  .btn-secondary {
+    @apply rounded-md border border-white/10 bg-white/[0.06] px-4 py-2 font-medium text-zinc-100 hover:bg-white/10;
+  }
+
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .badge-success {
+    @apply bg-emerald-500/20 text-emerald-400;
+  }
+
+  .badge-warning {
+    @apply bg-yellow-500/20 text-yellow-400;
+  }
+
+  .badge-danger {
+    @apply bg-red-500/20 text-red-400;
+  }
+
+  .badge-info {
+    @apply bg-blue-500/20 text-blue-400;
+  }
+
+  .toolbar-button {
+    @apply inline-flex items-center gap-2 rounded-md border border-white/10 bg-white/[0.04] px-3 py-2 text-[11px] font-medium text-zinc-400 transition hover:border-white/25 hover:bg-white/10 hover:text-white;
+  }
+
+  .toolbar-button-active {
+    @apply border-white/40 bg-white text-black hover:bg-zinc-200 hover:text-black;
+  }
+}

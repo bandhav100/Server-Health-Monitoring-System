@@ -1,0 +1,155 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "#5794F2",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "title": "Total Servers",
+      "type": "stat",
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "gridPos": { "h": 5, "w": 6, "x": 0, "y": 0 },
+      "id": 1,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "auto"
+      },
+      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }] } }, "overrides": [] },
+      "targets": [{ "expr": "count(up{job=\"windows_exporter\",instance=~\"$instance\"})", "refId": "A", "legendFormat": "Total" }],
+      "transparent": false
+    },
+    {
+      "title": "Healthy Servers",
+      "type": "stat",
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "gridPos": { "h": 5, "w": 6, "x": 6, "y": 0 },
+      "id": 2,
+      "options": { "colorMode": "background", "graphMode": "area", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
+      "fieldConfig": { "defaults": { "color": { "fixedColor": "green", "mode": "fixed" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }] } }, "overrides": [] },
+      "targets": [{ "expr": "count(up{job=\"windows_exporter\",instance=~\"$instance\"} == 1)", "refId": "A", "legendFormat": "Healthy" }]
+    },
+    {
+      "title": "Offline Servers",
+      "type": "stat",
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "gridPos": { "h": 5, "w": 6, "x": 12, "y": 0 },
+      "id": 3,
+      "options": { "colorMode": "background", "graphMode": "area", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
+      "fieldConfig": { "defaults": { "color": { "fixedColor": "red", "mode": "fixed" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }] } }, "overrides": [] },
+      "targets": [{ "expr": "count(up{job=\"windows_exporter\",instance=~\"$instance\"} == 0)", "refId": "A", "legendFormat": "Offline" }]
+    },
+    {
+      "title": "Prometheus Status",
+      "type": "stat",
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "gridPos": { "h": 5, "w": 6, "x": 18, "y": 0 },
+      "id": 4,
+      "options": { "colorMode": "background", "graphMode": "area", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
+      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "green", "value": 1 }] }, "mappings": [{ "type": "value", "options": { "0": { "text": "Down" }, "1": { "text": "Healthy" } } }] }, "overrides": [] },
+      "targets": [{ "expr": "up{job=\"prometheus\"}", "refId": "A", "legendFormat": "Prometheus" }]
+    },
+    {
+      "title": "CPU Usage (All Servers)",
+      "type": "timeseries",
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "gridPos": { "h": 9, "w": 12, "x": 0, "y": 5 },
+      "id": 5,
+      "fieldConfig": { "defaults": { "color": { "fixedColor": "#73BF69", "mode": "fixed" }, "unit": "percent", "min": 0, "max": 100, "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 60 }, { "color": "red", "value": 80 }] } }, "overrides": [] },
+      "options": { "legend": { "calcs": [], "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi", "sort": "desc" }, "drawStyle": "line", "lineInterpolation": "smooth", "fillOpacity": 12, "showPoints": "never", "spanNulls": true, "stacking": { "group": "A", "mode": "none" } },
+      "targets": [{ "expr": "100 - avg by(instance)(rate(windows_cpu_time_total{job=\"windows_exporter\",mode=\"idle\",instance=~\"$instance\"}[5m])) * 100", "refId": "A", "legendFormat": "{{instance}}" }]
+    },
+    {
+      "title": "RAM Usage (All Servers)",
+      "type": "timeseries",
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "gridPos": { "h": 9, "w": 12, "x": 12, "y": 5 },
+      "id": 6,
+      "fieldConfig": { "defaults": { "color": { "fixedColor": "#5794F2", "mode": "fixed" }, "unit": "percent", "min": 0, "max": 100, "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 70 }, { "color": "red", "value": 85 }] } }, "overrides": [] },
+      "options": { "legend": { "calcs": [], "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi", "sort": "desc" }, "drawStyle": "line", "lineInterpolation": "smooth", "fillOpacity": 12, "showPoints": "never", "spanNulls": true, "stacking": { "group": "A", "mode": "none" } },
+      "targets": [{ "expr": "100 * (1 - windows_memory_physical_free_bytes{job=\"windows_exporter\",instance=~\"$instance\"} / windows_memory_physical_total_bytes{job=\"windows_exporter\",instance=~\"$instance\"})", "refId": "A", "legendFormat": "{{instance}}" }]
+    },
+    {
+      "title": "Disk Usage (C:)",
+      "type": "timeseries",
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "gridPos": { "h": 9, "w": 12, "x": 0, "y": 14 },
+      "id": 7,
+      "fieldConfig": { "defaults": { "color": { "fixedColor": "#FF9830", "mode": "fixed" }, "unit": "percent", "min": 0, "max": 100, "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 70 }, { "color": "red", "value": 90 }] } }, "overrides": [] },
+      "options": { "legend": { "calcs": [], "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi", "sort": "desc" }, "drawStyle": "line", "lineInterpolation": "smooth", "fillOpacity": 12, "showPoints": "never", "spanNulls": true, "stacking": { "group": "A", "mode": "none" } },
+      "targets": [{ "expr": "100 * (1 - windows_logical_disk_free_bytes{job=\"windows_exporter\",volume=\"C:\",instance=~\"$instance\"} / windows_logical_disk_size_bytes{job=\"windows_exporter\",volume=\"C:\",instance=~\"$instance\"})", "refId": "A", "legendFormat": "{{instance}}" }]
+    },
+    {
+      "title": "Network Traffic (RX + TX)",
+      "type": "timeseries",
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "gridPos": { "h": 9, "w": 12, "x": 12, "y": 14 },
+      "id": 8,
+      "fieldConfig": { "defaults": { "unit": "MBs", "min": 0 }, "overrides": [{ "matcher": { "id": "byRegexp", "options": ".*RX" }, "properties": [{ "id": "color", "value": { "fixedColor": "#56D9F5", "mode": "fixed" } }] }, { "matcher": { "id": "byRegexp", "options": ".*TX" }, "properties": [{ "id": "color", "value": { "fixedColor": "#E86FC8", "mode": "fixed" } }] }] },
+      "options": { "legend": { "calcs": [], "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi", "sort": "desc" }, "drawStyle": "line", "lineInterpolation": "smooth", "fillOpacity": 10, "showPoints": "never", "spanNulls": true, "stacking": { "group": "A", "mode": "none" } },
+      "targets": [
+        { "expr": "sum by(instance)(rate(windows_net_bytes_received_total{job=\"windows_exporter\",instance=~\"$instance\"}[5m])) / 1024 / 1024", "refId": "A", "legendFormat": "{{instance}} RX" },
+        { "expr": "sum by(instance)(rate(windows_net_bytes_sent_total{job=\"windows_exporter\",instance=~\"$instance\"}[5m])) / 1024 / 1024", "refId": "B", "legendFormat": "{{instance}} TX" }
+      ]
+    },
+    {
+      "title": "Server Status",
+      "type": "table",
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 23 },
+      "id": 9,
+      "fieldConfig": { "defaults": { "custom": { "align": "auto", "displayMode": "auto" }, "mappings": [{ "options": { "0": { "color": "red", "text": "🔴 Offline" }, "1": { "color": "green", "text": "🟢 Healthy" } }, "type": "value" }] }, "overrides": [] },
+      "options": { "cellHeight": "sm", "footer": { "countRows": false, "fields": "", "reducer": ["sum"] }, "showHeader": true, "sortBy": [{ "desc": false, "displayName": "Status" }] },
+      "transformations": [{ "id": "reduce", "options": { "reducers": ["lastNotNull"], "fields": { "type": "number" } } }, { "id": "organize", "options": { "excludeByName": { "Time": true }, "indexByName": { "hostname": 0, "instance": 1, "Value": 2 }, "renameByName": { "Value": "Status" } } }],
+      "targets": [{ "expr": "up{job=\"windows_exporter\",instance=~\"$instance\"}", "format": "time_series", "instant": true, "refId": "A", "legendFormat": "{{instance}}" }]
+    },
+    {
+      "title": "Server Uptime",
+      "type": "table",
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 23 },
+      "id": 10,
+      "fieldConfig": { "defaults": { "custom": { "align": "auto", "displayMode": "auto" }, "unit": "d" }, "overrides": [] },
+      "options": { "cellHeight": "sm", "footer": { "countRows": false, "fields": "", "reducer": ["sum"] }, "showHeader": true, "sortBy": [{ "desc": true, "displayName": "Uptime (Days)" }] },
+      "transformations": [{ "id": "reduce", "options": { "reducers": ["lastNotNull"], "fields": { "type": "number" } } }, { "id": "organize", "options": { "excludeByName": { "Time": true }, "indexByName": { "hostname": 0, "instance": 1, "Value": 2 }, "renameByName": { "Value": "Uptime (Days)" } } }],
+      "targets": [{ "expr": "(time() - windows_system_boot_time_timestamp{job=\"windows_exporter\",instance=~\"$instance\"}) / 3600", "format": "time_series", "instant": true, "refId": "A", "legendFormat": "{{instance}}" }]
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 39,
+  "style": "dark",
+  "tags": ["shms", "windows", "prometheus", "infrastructure"],
+  "templating": {
+    "list": [
+      { "name": "DS_PROMETHEUS", "label": "Prometheus", "type": "datasource", "query": "prometheus", "current": { "text": "Prometheus", "value": "Prometheus" }, "hide": 0 },
+      { "name": "instance", "label": "Instance", "type": "query", "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" }, "definition": "label_values(up{job=\"windows_exporter\"}, instance)", "query": "label_values(up{job=\"windows_exporter\"}, instance)", "includeAll": true, "allValue": ".*", "multi": true, "refresh": 1, "sort": 1, "current": { "text": "All", "value": ["$__all"] }, "hide": 0 }
+    ]
+  },
+  "time": { "from": "now-24h", "to": "now" },
+  "timepicker": { "refresh_intervals": ["5s", "10s", "30s", "1m", "5m", "15m"], "time_options": ["5m", "15m", "1h", "6h", "12h", "24h", "7d"] },
+  "timezone": "browser",
+  "title": "SHMS | Server Health",
+  "uid": "ad5x2s5",
+  "version": 2,
+  "weekStart": ""
+}
