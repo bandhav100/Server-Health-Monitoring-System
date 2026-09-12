@@ -13,6 +13,16 @@ from datetime import datetime
 notifications_bp = Blueprint("notifications", __name__)
 
 
+@notifications_bp.route("/notifications/unread-count", methods=["GET"])
+@jwt_required_api
+def get_unread_count():
+    """Return only the unread notification count for the current admin (fast, lightweight)."""
+    identity = get_jwt_identity()
+    admin_id = int(identity)
+    count = Notification.query.filter_by(admin_id=admin_id, is_read=False).count()
+    return api_response(True, "Unread count fetched", {"unread_count": count}, 200)
+
+
 @notifications_bp.route("/notifications", methods=["GET"])
 @jwt_required_api
 def get_notifications():
@@ -28,17 +38,25 @@ def get_notifications():
     
     if unread_only:
         query = query.filter_by(is_read=False)
+
+    # Optional ordering: 'asc' or 'desc' (default desc)
+    order = request.args.get('order', 'desc').lower()
+    if order == 'asc':
+        query = query.order_by(Notification.created_at.asc())
+    else:
+        query = query.order_by(Notification.created_at.desc())
     
     total = query.count()
     unread_count = Notification.query.filter_by(admin_id=admin_id, is_read=False).count()
     
-    notifications = query.order_by(Notification.created_at.desc()).limit(limit).offset(offset).all()
+    notifications = query.limit(limit).offset(offset).all()
     
     response = {
         "total": total,
         "unread_count": unread_count,
         "limit": limit,
         "offset": offset,
+        "order": order,
         "notifications": [n.to_dict() for n in notifications]
     }
     return api_response(True, "Notifications fetched", response, 200)
