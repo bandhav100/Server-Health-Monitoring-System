@@ -1,12 +1,29 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/logo-icon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Server Health Monitoring System (SHMS)</title>
+    <title>SHMS | Operations Console</title>
+    <script>
+      (function() {
+        try {
+          var cached = localStorage.getItem('shms_settings_cache');
+          var theme = 'dark';
+          if (cached) {
+            var parsed = JSON.parse(cached);
+            if (parsed && parsed.theme) theme = parsed.theme;
+          }
+          if (theme === 'system') {
+            theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          }
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
