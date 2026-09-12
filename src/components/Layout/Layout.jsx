@@ -9,7 +9,10 @@ const Layout = ({ children }) => {
   return (
     <div className="min-h-screen bg-transparent">
       <Sidebar />
-      <div className="app-shell flex-1" style={{ marginLeft: sidebarOpen ? '256px' : '80px' }}>
+      <div
+        className="app-shell flex-1 transition-all duration-300"
+        style={{ marginLeft: sidebarOpen ? '256px' : '80px' }}
+      >
         <Navbar />
         <main className="min-h-[calc(100vh-80px)] bg-transparent p-4 sm:p-6">
           {children}

@@ -31,19 +31,21 @@ const ServerDropdown = ({ servers = [], query = '' }) => {
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-white text-sm font-medium"
+        className="server-dropdown-btn flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-[#182234] border border-cyan-500/30 hover:bg-[#1f2b42] text-white text-xs font-semibold shadow-sm transition-all cursor-pointer"
       >
-        <span className="inline-block w-2 h-2 rounded-full bg-cyan-400" />
-        <span className="truncate max-w-[150px]">{selectedServerKey === 'ALL' ? 'All Servers' : serverOptions.find((option) => option.key === selectedServerKey)?.name || 'All Servers'}</span>
-        <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+        <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.7)]" />
+        <span className="truncate max-w-[150px] font-medium">
+          {selectedServerKey === 'ALL' ? 'All Servers' : serverOptions.find((option) => option.key === selectedServerKey)?.name || 'All Servers'}
+        </span>
+        <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
       {isOpen && (
-        <div className="absolute top-full mt-2 w-64 bg-slate-800 border border-slate-700 rounded-lg shadow-lg z-50">
+        <div className="server-dropdown-menu absolute top-full mt-2 w-64 bg-slate-800 border border-slate-700 rounded-lg shadow-lg z-50">
           <div className="p-2">
             {filteredServers.length > 0 ? (
               <>
-                <button onClick={() => handleSelect('ALL')} className="w-full text-left px-3 py-2 rounded hover:bg-slate-700 text-sm text-cyan-300 transition-colors">
+                <button onClick={() => handleSelect('ALL')} className="server-dropdown-item w-full text-left px-3 py-2 rounded hover:bg-slate-700 text-sm text-cyan-300 transition-colors cursor-pointer">
                   <span className="inline-block w-2 h-2 rounded-full mr-2 bg-cyan-400" />
                   <span className="font-medium">All Servers</span>
                 </button>
@@ -54,7 +56,7 @@ const ServerDropdown = ({ servers = [], query = '' }) => {
                 <button
                   key={server.key}
                   onClick={() => handleSelect(server.key)}
-                  className="w-full text-left px-3 py-2 rounded hover:bg-slate-700 text-sm text-gray-200 transition-colors"
+                  className="server-dropdown-item w-full text-left px-3 py-2 rounded hover:bg-slate-700 text-sm text-gray-200 transition-colors cursor-pointer"
                 >
                   <span className={`inline-block w-2 h-2 rounded-full mr-2 ${dot}`} />
                   <span className="font-medium">{server.name}</span>

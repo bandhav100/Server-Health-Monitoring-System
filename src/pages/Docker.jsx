@@ -30,8 +30,8 @@ const DockerPage = () => {
       <div className="flex items-center gap-3 mb-6">
         <Container className="w-8 h-8 text-blue-400" />
         <div>
-          <h1 className="text-3xl font-bold text-white">Docker</h1>
-          <p className="text-gray-400 text-sm">Container management and monitoring</p>
+          <h1 className="text-3xl font-bold" style={{ color: 'var(--text-primary)' }}>Docker</h1>
+          <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Container management and monitoring</p>
         </div>
       </div>
 
@@ -40,27 +40,27 @@ const DockerPage = () => {
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-slate-700">
-                <th className="text-left px-4 py-3 font-semibold text-gray-400">Container Name</th>
-                <th className="text-left px-4 py-3 font-semibold text-gray-400">Image</th>
-                <th className="text-left px-4 py-3 font-semibold text-gray-400">Status</th>
-                <th className="text-left px-4 py-3 font-semibold text-gray-400">CPU</th>
-                <th className="text-left px-4 py-3 font-semibold text-gray-400">Memory</th>
-                <th className="text-left px-4 py-3 font-semibold text-gray-400">Uptime</th>
+              <tr className="border-b" style={{ borderColor: 'var(--border)' }}>
+                <th className="text-left px-4 py-3 font-semibold" style={{ color: 'var(--text-secondary)' }}>Container Name</th>
+                <th className="text-left px-4 py-3 font-semibold" style={{ color: 'var(--text-secondary)' }}>Image</th>
+                <th className="text-left px-4 py-3 font-semibold" style={{ color: 'var(--text-secondary)' }}>Status</th>
+                <th className="text-left px-4 py-3 font-semibold" style={{ color: 'var(--text-secondary)' }}>CPU</th>
+                <th className="text-left px-4 py-3 font-semibold" style={{ color: 'var(--text-secondary)' }}>Memory</th>
+                <th className="text-left px-4 py-3 font-semibold" style={{ color: 'var(--text-secondary)' }}>Uptime</th>
               </tr>
             </thead>
             <tbody>
               {containers.map((container) => (
-                <tr key={container.id} className="border-b border-slate-700 hover:bg-slate-700/50">
-                  <td className="px-4 py-3 font-medium text-white">{container.name}</td>
-                  <td className="px-4 py-3 text-gray-400 text-xs">{container.image}</td>
+                <tr key={container.id} className="border-b hover:bg-white/5 transition-colors" style={{ borderColor: 'var(--border-subtle)' }}>
+                  <td className="px-4 py-3 font-medium" style={{ color: 'var(--text-primary)' }}>{container.name}</td>
+                  <td className="px-4 py-3 text-xs" style={{ color: 'var(--text-muted)' }}>{container.image}</td>
                   <td className="px-4 py-3">
                     <span className="badge badge-success">{container.status}</span>
                   </td>
-                  <td className="px-4 py-3 text-gray-300">{container.cpu}</td>
-                  <td className="px-4 py-3 text-gray-300 text-xs">{container.memory}</td>
-                  <td className="px-4 py-3 text-gray-300">{container.uptime}</td>
-                  <td className="px-4 py-3 space-x-2"><button className="text-emerald-400" onClick={() => action('start', container.id)}>Start</button><button className="text-yellow-400" onClick={() => action('restart', container.id)}>Restart</button><button className="text-red-400" onClick={() => action('stop', container.id)}>Stop</button></td>
+                  <td className="px-4 py-3" style={{ color: 'var(--text-secondary)' }}>{container.cpu}</td>
+                  <td className="px-4 py-3 text-xs" style={{ color: 'var(--text-secondary)' }}>{container.memory}</td>
+                  <td className="px-4 py-3" style={{ color: 'var(--text-secondary)' }}>{container.uptime}</td>
+                  <td className="px-4 py-3 space-x-2"><button className="text-emerald-400 cursor-pointer" onClick={() => action('start', container.id)}>Start</button><button className="text-yellow-400 cursor-pointer" onClick={() => action('restart', container.id)}>Restart</button><button className="text-red-400 cursor-pointer" onClick={() => action('stop', container.id)}>Stop</button></td>
                 </tr>
               ))}
             </tbody>

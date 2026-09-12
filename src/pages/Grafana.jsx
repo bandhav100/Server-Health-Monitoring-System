@@ -41,8 +41,8 @@ const Grafana = () => {
       <div className="flex items-center gap-3 mb-6">
         <BarChart3 className="w-8 h-8 text-pink-400" />
         <div>
-          <h1 className="text-3xl font-bold text-white">Grafana</h1>
-          <p className="text-gray-400 text-sm">External analytics and monitoring dashboard</p>
+          <h1 className="text-3xl font-bold" style={{ color: 'var(--text-primary)' }}>Grafana</h1>
+          <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>External analytics and monitoring dashboard</p>
         </div>
       </div>
 
