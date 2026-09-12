@@ -23,6 +23,10 @@ from routes.docker import docker_bp
 from routes.settings import settings_bp
 from routes.notifications import notifications_bp
 from routes.system import system_bp
+from routes.analytics import analytics_bp
+from routes.setup import setup_bp
+from routes.reports import reports_bp
+from models.report import Report
 from middleware.error_handlers import register_error_handlers
 from scheduler.jobs import start_scheduler, sync_prometheus_servers
 from services.auth_service import AuthService
@@ -55,7 +59,18 @@ def create_app(config_name="default"):
     app.config.from_object(config_by_name[config_name])
 
     db.init_app(app)
-    cors.init_app(app)
+    cors_origins = app.config.get("CORS_ORIGINS", ["http://localhost:5173", "http://127.0.0.1:5173"])
+    cors.init_app(
+        app,
+        resources={
+            r"/api/*": {
+                "origins": cors_origins,
+                "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+                "allow_headers": ["Content-Type", "Authorization"],
+                "supports_credentials": True,
+            }
+        },
+    )
     jwt.init_app(app)
 
     @jwt.unauthorized_loader
@@ -84,6 +99,9 @@ def create_app(config_name="default"):
     app.register_blueprint(settings_bp, url_prefix="/api")
     app.register_blueprint(notifications_bp, url_prefix="/api")
     app.register_blueprint(system_bp, url_prefix="/api")
+    app.register_blueprint(analytics_bp, url_prefix="/api/analytics")
+    app.register_blueprint(setup_bp, url_prefix="/api/setup")
+    app.register_blueprint(reports_bp, url_prefix="/api/reports")
 
     register_error_handlers(app)
 
@@ -103,16 +121,21 @@ def create_app(config_name="default"):
         safe_database_url = make_url(database_url).render_as_string(hide_password=True)
         print(f"[startup] Database connected: {safe_database_url}")
         AuthService.seed_admin()
+        from models.settings import Setting
+        Setting.seed_defaults()
         sync_prometheus_servers(app)
 
     if os.getenv("FLASK_ENV") != "production":
         print("[startup] Validating service dependencies...")
         try:
             import requests
+            prometheus_health_url = f"{app.config.get('PROMETHEUS_URL', 'http://127.0.0.1:9090').rstrip('/')}/api/v1/query?query=up"
+            grafana_health_url = f"{app.config.get('GRAFANA_URL', 'http://localhost:3000').rstrip('/')}/api/health"
+            exporter_health_url = f"{app.config.get('WINDOWS_EXPORTER_URL', 'http://localhost:9182/').rstrip('/')}/metrics"
             for label, url in {
-                "Prometheus": "http://localhost:9090/api/v1/query?query=up",
-                "Grafana": "http://localhost:3000/api/health",
-                "Windows Exporter": "http://localhost:9182/metrics",
+                "Prometheus": prometheus_health_url,
+                "Grafana": grafana_health_url,
+                "Windows Exporter": exporter_health_url,
             }.items():
                 try:
                     r = requests.get(url, timeout=5)
@@ -144,4 +167,6 @@ def create_app(config_name="default"):
 
 if __name__ == "__main__":
     app = create_app()
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    host = os.getenv("FLASK_HOST", app.config.get("FLASK_HOST", "0.0.0.0"))
+    port = int(os.getenv("FLASK_PORT", app.config.get("FLASK_PORT", 5000)))
+    app.run(host=host, port=port, debug=app.debug)

@@ -10,8 +10,8 @@ const ChartCard = ({ title, subtitle, children }) => {
       transition={{ duration: 0.3 }}
     >
       <div className="mb-4">
-        <h3 className="text-lg font-semibold text-white">{title}</h3>
-        {subtitle && <p className="text-xs text-gray-400 mt-1">{subtitle}</p>}
+        <h3 className="text-lg font-semibold chartcard-title">{title}</h3>
+        {subtitle && <p className="text-xs chartcard-subtitle mt-1">{subtitle}</p>}
       </div>
       {children}
     </motion.div>

@@ -26,7 +26,7 @@ const Login = () => {
     <main className="min-h-screen bg-slate-900 flex items-center justify-center p-6">
       <form onSubmit={submit} className="card w-full max-w-md p-8 space-y-5">
         <div className="flex items-center gap-3">
-          <LogIn className="w-7 h-7 text-emerald-400" />
+          <img src="/logo-icon.png" alt="SHMS Logo" className="w-8 h-8 object-contain" />
           <h1 className="text-2xl font-bold text-white">SHMS Login</h1>
         </div>
         {error && <p className="text-sm text-red-400">{error}</p>}

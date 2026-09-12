@@ -80,7 +80,7 @@ def fetch_prometheus_metrics(app):
                     network_usage=instance_metrics.get("networkUsage"),
                     network_receive=receive,
                     network_send=send,
-                    temperature=instance_metrics.get("temperature"),
+                    temperature=instance_metrics.get("cpuTemperature") or instance_metrics.get("temperature"),
                     uptime=instance_metrics.get("uptime"),
                 )
                 db.session.add(history)
@@ -141,16 +141,23 @@ def cleanup_old_data(app):
     """Clean up old metrics and logs (run once daily)"""
     with app.app_context():
         try:
-            # Delete metrics older than 30 days
-            cutoff_date = datetime.utcnow() - timedelta(days=30)
+            from models.settings import Setting
+            retention_days = int(Setting.get_value("history_retention_days", 30))
+            log_retention_days = 90  # audit logs always kept longer
+
+            # Delete metrics older than the configured retention period
+            cutoff_date = datetime.utcnow() - timedelta(days=retention_days)
             old_metrics = MetricsHistory.query.filter(MetricsHistory.created_at < cutoff_date).delete()
-            
+
             # Delete audit logs older than 90 days
-            old_logs_cutoff = datetime.utcnow() - timedelta(days=90)
+            old_logs_cutoff = datetime.utcnow() - timedelta(days=log_retention_days)
             old_logs = AuditLog.query.filter(AuditLog.created_at < old_logs_cutoff).delete()
-            
+
             db.session.commit()
-            logger.info("Scheduler: Cleanup - deleted %d old metrics, %d old logs", old_metrics, old_logs)
+            logger.info(
+                "Scheduler: Cleanup - deleted %d old metrics (>%dd), %d old logs (>%dd)",
+                old_metrics, retention_days, old_logs, log_retention_days,
+            )
         except Exception as exc:
             logger.exception("Cleanup scheduler failed: %s", exc)
 

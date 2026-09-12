@@ -100,8 +100,11 @@ def sync_machines(status=None, runner=None):
         ip = machine["tailscale_ip"].strip()
         server = existing.get(ip.casefold())
         if server is None:
-            server = Server(tailscale_ip=ip)
+            server = Server(tailscale_ip=ip, source="tailscale")
             db.session.add(server)
+        else:
+            if not server.source:
+                server.source = "tailscale"
         server.name = machine["hostname"]
         server.tailscale_ip = ip
         server.operating_system = machine["os"] or "Windows 11"
@@ -111,7 +114,8 @@ def sync_machines(status=None, runner=None):
         synced.append(server)
 
     for server in Server.query.all():
-        if not server.tailscale_ip or server.tailscale_ip.strip().casefold() not in by_ip:
+        # Only prune stale servers that were originally registered and managed by Tailscale
+        if (server.source == "tailscale") and (not server.tailscale_ip or server.tailscale_ip.strip().casefold() not in by_ip):
             remove_server(server)
     return synced
 
