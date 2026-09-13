@@ -3,7 +3,7 @@ import React, { createContext, useContext, useState } from 'react';
 const ServerContext = createContext(null);
 
 export const SERVER_OPTIONS = [
-  { key: 'bandhav', name: 'Bandhav', ip: '100.84.0.0', instance: '100.84.0.0:9182' },
+  { key: 'bandhav', name: 'Bandhav', ip: '100.84.0.9', instance: '100.84.0.9:9182' },
   { key: 'lenovo', name: 'LENOVO', ip: '100.95.242.5', instance: '100.95.242.5:9182' },
   { key: 'navadeep', name: 'Navadeep', ip: '100.72.224.107', instance: '100.72.224.107:9182' },
   { key: 'manju', name: 'Manju', ip: '100.104.89.32', instance: '100.104.89.32:9182' },
@@ -37,3 +37,4 @@ export const useServerContext = () => {
   if (!context) throw new Error('useServerContext must be used within ServerProvider');
   return context;
 };
+

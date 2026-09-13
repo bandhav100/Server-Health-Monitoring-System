@@ -149,7 +149,7 @@ def verify_prom_target():
     instance = str(data.get("instance") or data.get("target") or "").strip()
 
     if not instance:
-        return api_response(False, "Target instance is required (e.g. 100.84.0.0:9182)", None, 400)
+        return api_response(False, "Target instance is required (e.g. 100.84.0.9:9182)", None, 400)
 
     service = PrometheusService()
     try:
@@ -314,3 +314,4 @@ def verify_all():
         },
         200,
     )
+

@@ -1,0 +1,130 @@
+.predictions-page { --prediction-ink: #122033; --prediction-muted: #718096; --prediction-line: #E3EAF2; max-width: 1800px; margin: 0 auto; color: var(--prediction-ink); }
+.predictions-header, .prediction-toolbar, .prediction-panel-head, .prediction-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }.predictions-header { margin-bottom: 20px; }.predictions-title { display: flex; align-items: center; gap: 11px; }.predictions-title > span { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 10px; color: #2563EB; background: #EDF4FF; }.predictions-title h1 { margin: 0; font-size: 28px; letter-spacing: -.02em; }.predictions-title p { margin: 5px 0 0; color: var(--prediction-muted); font-size: 13px; }.predictions-meta { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; color: var(--prediction-muted); font-size: 11px; }.predictions-meta span { display: inline-flex; align-items: center; gap: 6px; padding: 8px 10px; border: 1px solid var(--prediction-line); border-radius: 8px; background: #fff; }.predictions-meta .live { color: #159447; }.predictions-meta i, .prediction-live i { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }.prediction-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; padding: 10px 12px; border: 1px solid var(--prediction-line); border-radius: 11px; background: #fff; }.prediction-server-select { display: flex; align-items: center; gap: 8px; }.prediction-server-select b { color: var(--prediction-muted); font-size: 10px; text-transform: uppercase; letter-spacing: .08em; }.prediction-server-select select { border: 1px solid #D7E1EE; border-radius: 7px; color: #1E293B; background: #fff; font: inherit; font-size: 11px; font-weight: 600; padding: 6px 10px; cursor: pointer; outline: none; }.prediction-server-select select:focus { border-color: #2563EB; }.prediction-range { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; }.prediction-range b { margin-right: 4px; color: var(--prediction-muted); font-size: 10px; text-transform: uppercase; letter-spacing: .08em; }.prediction-range button, .retrain-button { border: 1px solid #D7E1EE; border-radius: 7px; color: #64748B; background: #fff; font: inherit; font-size: 11px; cursor: pointer; }.prediction-range button { padding: 7px 10px; }.prediction-range button.active, .prediction-range button:hover { border-color: #2563EB; color: #fff; background: #2563EB; }.retrain-button { display: inline-flex; align-items: center; gap: 7px; padding: 8px 12px; color: #fff; border-color: #2563EB; background: #2563EB; font-weight: 700; }.retrain-button:disabled { cursor: wait; opacity: .65; }.prediction-section-label { margin: 22px 0 10px; color: #718096; font-size: 10px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }.prediction-summary-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }.prediction-summary-card { min-width: 0; min-height: 194px; padding: 16px; overflow: hidden; border-radius: 14px; color: #fff; box-shadow: 0 12px 24px rgba(31, 67, 115, .13); }.prediction-summary-card.blue { background: linear-gradient(135deg, #2563EB, #1746A2); }.prediction-summary-card.green { background: linear-gradient(135deg, #149B67, #08714C); }.prediction-summary-card.purple { background: linear-gradient(135deg, #7158D5, #473195); }.prediction-summary-card.orange { background: linear-gradient(135deg, #E38A27, #B65B0D); }.prediction-card-head { align-items: center; }.prediction-card-icon { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 8px; background: rgba(255,255,255,.18); }.prediction-card-label { flex: 1; font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }.prediction-status, .severity-badge { display: inline-flex; padding: 4px 7px; border-radius: 99px; font-size: 9px; font-weight: 800; text-transform: uppercase; }.prediction-status.healthy { background: #D7F8E7; color: #08714C; }.prediction-status.watch { background: #FFF0CA; color: #9A5800; }.prediction-status.critical { background: #FFE0E3; color: #A12535; }.prediction-main-value { margin-top: 18px; font-size: 30px; font-weight: 800; }.prediction-main-value small { margin-left: 3px; font-size: 13px; font-weight: 600; opacity: .75; }.prediction-card-sub { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 2px; color: rgba(255,255,255,.8); font-size: 11px; }.prediction-meter { height: 5px; margin-top: 21px; overflow: hidden; border-radius: 99px; background: rgba(255,255,255,.2); }.prediction-meter i { display: block; height: 100%; border-radius: inherit; background: #fff; transition: width .5s ease; }.prediction-extra { margin: 10px 0 0; color: rgba(255,255,255,.72); font-size: 10px; }.health-ring { display: grid; width: 84px; height: 84px; margin: 12px auto 0; place-content: center; justify-items: center; border-radius: 50%; background: conic-gradient(#fff var(--health), rgba(255,255,255,.2) 0); }.health-ring::before { position: absolute; width: 68px; height: 68px; content: ''; border-radius: 50%; background: #2460C6; }.green .health-ring::before { background: #11865A; }.health-ring strong, .health-ring span { position: relative; z-index: 1; }.health-ring strong { font-size: 16px; }.health-ring span { margin-top: 1px; font-size: 8px; opacity: .7; }.prediction-skeleton { display: flex; gap: 6px; margin-top: 28px; }.prediction-skeleton i { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,.75); animation: prediction-pulse 1s infinite alternate; }.prediction-skeleton i:nth-child(2) { animation-delay: .2s; }.prediction-skeleton i:nth-child(3) { animation-delay: .4s; } @keyframes prediction-pulse { to { opacity: .25; transform: translateY(-3px); } }
+.insight-card.muted > span { color: #64748B; background: #F1F5F9; }
+.prediction-chart-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }.prediction-panel { min-width: 0; border: 1px solid var(--prediction-line); border-radius: 14px; background: #fff; box-shadow: 0 5px 18px rgba(23, 32, 51, .045); }.prediction-chart-panel { min-height: 350px; padding: 15px; }.prediction-panel-head { margin-bottom: 10px; }.prediction-panel-head h2 { margin: 0; color: #1E293B; font-size: 13px; }.prediction-panel-head p { margin: 4px 0 0; color: #94A3B8; font-size: 10px; }.prediction-live { display: inline-flex; align-items: center; gap: 5px; color: #159447; font-size: 9px; font-weight: 800; text-transform: uppercase; }.prediction-chart { height: 275px; }.prediction-tooltip { display: grid; gap: 4px; min-width: 140px; padding: 9px; border: 1px solid var(--prediction-line); border-radius: 7px; background: #fff; box-shadow: 0 8px 24px rgba(23,32,51,.12); font-size: 10px; }.prediction-tooltip strong { color: var(--prediction-ink); }.prediction-tooltip span { font-weight: 600; }.prediction-panels-grid { display: grid; grid-template-columns: 1.4fr .6fr; gap: 14px; }.prediction-panel-heading { padding: 15px 16px 10px; border-bottom: 1px solid var(--prediction-line); }.prediction-panel-heading h2 { margin: 0; font-size: 13px; }.prediction-panel-heading p { margin: 4px 0 0; color: #94A3B8; font-size: 10px; }.insights-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; padding: 14px; }.insight-card { display: flex; align-items: center; gap: 9px; min-width: 0; padding: 11px; border: 1px solid #EDF0F5; border-radius: 9px; background: #FBFCFE; }.insight-card > span { display: grid; place-items: center; width: 28px; height: 28px; flex: 0 0 auto; border-radius: 7px; color: #2563EB; background: #EDF4FF; }.insight-card.green > span { color: #159447; background: #ECF9F0; }.insight-card.orange > span { color: #D97706; background: #FFF4DF; }.insight-card p, .insight-card strong, .insight-card small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }.insight-card p { margin: 0; color: #718096; font-size: 9px; }.insight-card strong { margin-top: 2px; color: #1F2937; font-size: 13px; }.insight-card small { margin-top: 2px; color: #94A3B8; font-size: 9px; }.confidence-panel { padding: 15px 16px; }.confidence-row { margin: 15px 0; }.confidence-row > div:first-child { display: flex; justify-content: space-between; margin-bottom: 6px; color: #64748B; font-size: 11px; }.confidence-row strong { color: #1F2937; }.confidence-track { height: 7px; overflow: hidden; border-radius: 99px; background: #E8EDF3; }.confidence-track i { display: block; height: 100%; border-radius: inherit; transition: width .6s ease; }.prediction-table-wrap { overflow-x: auto; padding: 0 15px 12px; }.prediction-table { width: 100%; min-width: 820px; border-collapse: collapse; text-align: left; }.prediction-table th { padding: 10px 8px; color: #8792A4; border-bottom: 1px solid var(--prediction-line); font-size: 9px; letter-spacing: .07em; text-transform: uppercase; }.prediction-table td { padding: 10px 8px; color: #64748B; border-bottom: 1px solid #F0F2F5; font-size: 10px; white-space: nowrap; }.prediction-table td b { color: #1F2937; }.severity-badge.warning { color: #B45309; background: #FFF4DF; }.severity-badge.critical { color: #C62828; background: #FFF0F0; }.severity-badge.info { color: #2563EB; background: #EAF2FF; }.prediction-empty { padding: 24px 15px; color: #94A3B8; font-size: 11px; text-align: center; }.prediction-toast { position: fixed; right: 24px; bottom: 24px; z-index: 10; padding: 11px 14px; border-radius: 8px; color: #fff; background: #15803D; box-shadow: 0 8px 20px rgba(15,23,42,.2); font-size: 12px; font-weight: 700; }
+@media (max-width: 1100px) { .prediction-summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }.prediction-panels-grid { grid-template-columns: 1fr; } }
+@media (max-width: 780px) { .predictions-header, .prediction-toolbar { align-items: stretch; flex-direction: column; }.predictions-meta { justify-content: flex-start; }.prediction-chart-grid { grid-template-columns: 1fr; }.insights-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 520px) { .prediction-summary-grid, .insights-grid { grid-template-columns: 1fr; }.predictions-title h1 { font-size: 24px; }.prediction-range { align-items: stretch; }.prediction-range button { flex: 1 0 28%; }.retrain-button { justify-content: center; }.prediction-chart-panel { min-height: 320px; }.prediction-chart { height: 245px; } }
+
+/* ═══════════════════════════════════════════════════════════════
+   PREDICTIONS PAGE - DARK MODE OVERRIDES
+   ═══════════════════════════════════════════════════════════════ */
+
+html[data-theme="dark"] .predictions-page {
+  --prediction-ink: #FFFFFF;
+  --prediction-muted: #A3A3A3;
+  --prediction-line: #171717;
+  background: #000000;
+  color: var(--prediction-ink);
+}
+
+html[data-theme="dark"] .predictions-title h1 {
+  color: #FFFFFF;
+}
+
+html[data-theme="dark"] .predictions-meta span {
+  background: #080808;
+  border-color: #171717;
+  color: #A3A3A3;
+}
+
+html[data-theme="dark"] .prediction-toolbar {
+  background: #080808;
+  border-color: #222222;
+}
+
+html[data-theme="dark"] .prediction-server-select select {
+  background: #080808;
+  border-color: #242424;
+  color: #FFFFFF;
+}
+
+html[data-theme="dark"] .prediction-server-select select option {
+  background: #080808;
+  color: #FFFFFF;
+}
+
+html[data-theme="dark"] .prediction-range button {
+  background: #080808;
+  border-color: #242424;
+  color: #D4D4D4;
+}
+
+html[data-theme="dark"] .prediction-range button:hover {
+  background: #151515;
+  color: #FFFFFF;
+  border-color: #3B82F6;
+}
+
+html[data-theme="dark"] .prediction-range button.active {
+  background: #2563EB;
+  border-color: #2563EB;
+  color: #FFFFFF;
+}
+
+html[data-theme="dark"] .prediction-panel {
+  background: #050505;
+  border-color: #1A1A1A;
+  box-shadow: 0 5px 18px rgba(0, 0, 0, 0.6);
+}
+
+html[data-theme="dark"] .prediction-panel-head h2,
+html[data-theme="dark"] .prediction-panel-heading h2 {
+  color: #FFFFFF;
+}
+
+html[data-theme="dark"] .prediction-panel-head p,
+html[data-theme="dark"] .prediction-panel-heading p {
+  color: #A3A3A3;
+}
+
+html[data-theme="dark"] .prediction-panel-heading {
+  border-bottom-color: #171717;
+}
+
+html[data-theme="dark"] .insight-card {
+  background: #080808;
+  border-color: #1A1A1A;
+}
+
+html[data-theme="dark"] .insight-card strong {
+  color: #FFFFFF;
+}
+
+html[data-theme="dark"] .confidence-row strong {
+  color: #FFFFFF;
+}
+
+html[data-theme="dark"] .confidence-track {
+  background: #202020;
+}
+
+html[data-theme="dark"] .prediction-table th {
+  background: #080808;
+  border-bottom-color: #171717;
+  color: #A3A3A3;
+}
+
+html[data-theme="dark"] .prediction-table td {
+  background: #000000;
+  border-bottom-color: #171717;
+  color: #D4D4D4;
+}
+
+html[data-theme="dark"] .prediction-table tbody tr:hover td {
+  background: #0D0D0D;
+}
+
+html[data-theme="dark"] .prediction-table td b {
+  color: #FFFFFF;
+}
+
+html[data-theme="dark"] .prediction-tooltip {
+  background: #0A0A0A;
+  border-color: #242424;
+  color: #A3A3A3;
+}
+
+html[data-theme="dark"] .prediction-tooltip strong {
+  color: #FFFFFF;
+}

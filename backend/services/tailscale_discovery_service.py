@@ -13,7 +13,7 @@ class TailscaleUnavailable(Exception):
 
 
 CANONICAL_TAILSCALE_IPS = {
-    "100.84.0.0",
+    "100.84.0.9",
     "100.95.242.5",
     "100.104.89.32",
     "100.72.224.107",
