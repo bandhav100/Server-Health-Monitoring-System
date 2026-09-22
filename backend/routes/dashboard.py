@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
-from flask import Blueprint, request
+from flask import Blueprint, jsonify, request
+from flask_jwt_extended import verify_jwt_in_request
 from models.server import Server
 from models.metrics_history import MetricsHistory
 from models.alert import Alert
@@ -11,6 +12,7 @@ from services.prometheus_service import PrometheusService, PrometheusUnavailable
 from services.prometheus_discovery_service import sync_servers
 from services.tailscale_discovery_service import sync_machines, TailscaleUnavailable
 from extensions import db
+
 
 
 dashboard_bp = Blueprint("dashboard", __name__)
@@ -174,6 +176,245 @@ def server_dashboard(hostname):
         "uptime": f'{snapshot["uptime"]:.1f} h' if snapshot.get("uptime") is not None else "Unavailable",
         "lastRefresh": datetime.utcnow().isoformat() + "Z",
     }, 200)
+
+
+TARGET_SERVERS = [
+    {
+        "hostname": "Bandhav",
+        "ip": "100.84.0.9",
+        "instance": "100.84.0.9:9182",
+        "environment": "Production",
+        "has_lhm": True,
+    },
+    {
+        "hostname": "Abhi",
+        "ip": "100.95.242.5",
+        "instance": "100.95.242.5:9182",
+        "environment": "Production",
+        "has_lhm": False,
+    },
+    {
+        "hostname": "Manju",
+        "ip": "100.104.89.32",
+        "instance": "100.104.89.32:9182",
+        "environment": "Staging",
+        "has_lhm": False,
+    },
+    {
+        "hostname": "Sai Vinay",
+        "ip": "100.102.76.81",
+        "instance": "100.102.76.81:9182",
+        "environment": "Production",
+        "has_lhm": False,
+    },
+    {
+        "hostname": "Navadeep",
+        "ip": "100.72.224.107",
+        "instance": "100.72.224.107:9182",
+        "environment": "Production",
+        "has_lhm": False,
+    },
+]
+
+
+def _format_uptime_str(seconds):
+    if seconds is None or seconds < 0:
+        return "--"
+    total_minutes = int(seconds // 60)
+    days = total_minutes // 1440
+    hours = (total_minutes % 1440) // 60
+    minutes = total_minutes % 60
+    if days > 0:
+        return f"{days}d {hours}h {minutes}m"
+    if hours > 0:
+        return f"{hours}h {minutes}m"
+    return f"{minutes}m"
+
+
+def _query_vector_map(service, expr):
+    try:
+        results = service.query(expr)
+        mapping = {}
+        for item in results:
+            inst = item.get("metric", {}).get("instance", "")
+            val = item.get("value", [None, None])[-1]
+            if inst and val is not None:
+                try:
+                    mapping[inst] = float(val)
+                except (ValueError, TypeError):
+                    pass
+        return mapping
+    except Exception:
+        return {}
+
+
+def _query_scalar_val(service, expr):
+    try:
+        results = service.query(expr)
+        if results:
+            val = results[0].get("value", [None, None])[-1]
+            return float(val) if val is not None else None
+    except Exception:
+        pass
+    return None
+
+
+@dashboard_bp.route("/live", methods=["GET"])
+def live_all():
+    """Get live metrics for all Prometheus target servers."""
+    try:
+        verify_jwt_in_request(optional=True)
+    except Exception:
+        pass
+
+    service = PrometheusService()
+
+    up_map = _query_vector_map(service, 'up{job="windows_exporter"}')
+    cpu_map = _query_vector_map(service, '100 - (avg by(instance)(rate(windows_cpu_time_total{mode="idle"}[5m])) * 100)')
+    ram_map = _query_vector_map(service, '100 * (1 - windows_memory_physical_free_bytes / windows_memory_physical_total_bytes)')
+    if not ram_map:
+        ram_map = _query_vector_map(service, '100 * (1 - windows_os_physical_memory_free_bytes / windows_cs_physical_memory_bytes)')
+    disk_map = _query_vector_map(service, '100 * (1 - windows_logical_disk_free_bytes{volume="C:"} / windows_logical_disk_size_bytes{volume="C:"})')
+    uptime_map = _query_vector_map(service, 'time() - windows_system_system_up_time')
+    if not uptime_map:
+        uptime_map = _query_vector_map(service, 'time() - windows_system_boot_time_timestamp')
+    processes_map = _query_vector_map(service, 'windows_system_processes')
+    threads_map = _query_vector_map(service, 'windows_system_threads')
+    csw_map = _query_vector_map(service, 'rate(windows_system_context_switches_total[5m])')
+    queue_map = _query_vector_map(service, 'windows_system_processor_queue_length')
+    syscalls_map = _query_vector_map(service, 'rate(windows_system_system_calls_total[5m])')
+    exceptions_map = _query_vector_map(service, 'rate(windows_system_exception_dispatches_total[5m])')
+    net_in_map = _query_vector_map(service, 'sum by(instance)(rate(windows_net_bytes_received_total[5m])) / 1024 / 1024')
+    net_out_map = _query_vector_map(service, 'sum by(instance)(rate(windows_net_bytes_sent_total[5m])) / 1024 / 1024')
+    disk_read_map = _query_vector_map(service, 'rate(windows_logical_disk_read_bytes_total{volume="C:"}[5m]) / 1024 / 1024')
+    disk_write_map = _query_vector_map(service, 'rate(windows_logical_disk_write_bytes_total{volume="C:"}[5m]) / 1024 / 1024')
+
+    lhm_cpu_temp = _query_scalar_val(service, 'lhm_cpu_temperature_celsius{sensorName="Core (Tctl/Tdie)"}')
+    if lhm_cpu_temp is None:
+        lhm_cpu_temp = _query_scalar_val(service, 'avg(lhm_cpu_temperature_celsius)')
+    lhm_gpu_usage = _query_scalar_val(service, 'lhm_gpuamd_load_percent{sensorName="GPU Core"}')
+    if lhm_gpu_usage is None:
+        lhm_gpu_usage = _query_scalar_val(service, 'avg(lhm_gpuamd_load_percent)')
+    lhm_gpu_clock = _query_scalar_val(service, 'lhm_gpuamd_clock_hertz{sensorName="GPU Core"} / 1000000000')
+    if lhm_gpu_clock is None:
+        lhm_gpu_clock = _query_scalar_val(service, 'avg(lhm_gpuamd_clock_hertz) / 1000000000')
+    lhm_gpu_voltage = _query_scalar_val(service, 'lhm_gpuamd_voltage_volts{sensorName="GPU Core"}')
+    if lhm_gpu_voltage is None:
+        lhm_gpu_voltage = _query_scalar_val(service, 'avg(lhm_gpuamd_voltage_volts)')
+    lhm_gpu_memory = _query_scalar_val(service, 'lhm_gpuamd_smalldata_bytes{sensorName="GPU Memory Used"} / 1048576')
+    if lhm_gpu_memory is None:
+        lhm_gpu_memory = _query_scalar_val(service, 'avg(lhm_gpuamd_smalldata_bytes) / 1048576')
+    lhm_ssd_temp = _query_scalar_val(service, 'lhm_storage_temperature_celsius{sensorName="Composite Temperature"}')
+    if lhm_ssd_temp is None:
+        lhm_ssd_temp = _query_scalar_val(service, 'avg(lhm_storage_temperature_celsius)')
+
+    # Fallback to direct lhm-exporter scrape if Prometheus didn't return any LHM gauge
+    if any(v is None for v in [lhm_cpu_temp, lhm_gpu_usage, lhm_gpu_clock, lhm_gpu_voltage, lhm_gpu_memory, lhm_ssd_temp]):
+        try:
+            import requests as req
+            resp = req.get("http://lhm-exporter:9105/metrics", timeout=2)
+            if resp.ok:
+                for line in resp.text.splitlines():
+                    if line.startswith("#"):
+                        continue
+                    parts = line.split()
+                    if len(parts) >= 2:
+                        try:
+                            val = float(parts[-1])
+                            if "lhm_cpu_temperature_celsius" in line and lhm_cpu_temp is None:
+                                lhm_cpu_temp = val
+                            elif "lhm_gpuamd_load_percent" in line and lhm_gpu_usage is None:
+                                lhm_gpu_usage = val
+                            elif "lhm_gpuamd_clock_hertz" in line and lhm_gpu_clock is None:
+                                lhm_gpu_clock = val / 1000000000.0
+                            elif "lhm_gpuamd_voltage_volts" in line and lhm_gpu_voltage is None:
+                                lhm_gpu_voltage = val
+                            elif "lhm_gpuamd_smalldata_bytes" in line and lhm_gpu_memory is None:
+                                lhm_gpu_memory = val / 1048576.0
+                            elif "lhm_storage_temperature_celsius" in line and lhm_ssd_temp is None:
+                                lhm_ssd_temp = val
+                        except (ValueError, TypeError):
+                            pass
+        except Exception:
+            pass
+
+    def r(val, digits=2):
+        return round(val, digits) if isinstance(val, (int, float)) else None
+
+    db_servers = {}
+    try:
+        db_servers = {s.tailscale_ip or s.ip_address: s for s in Server.query.all()}
+    except Exception:
+        pass
+
+    servers_data = []
+    for s in TARGET_SERVERS:
+        inst = s["instance"]
+        ip = s["ip"]
+        db_s = db_servers.get(ip)
+
+        # Build candidate instances in Prometheus
+        candidates = [inst, f"{ip}:9182"]
+        if s.get("has_lhm") or s["hostname"].lower() in {"bandhav", "localhost"}:
+            candidates.extend(["host.docker.internal:9182", "localhost:9182", "127.0.0.1:9182"])
+
+        # Determine the active lookup instance
+        lookup_inst = inst
+        for cand in candidates:
+            if up_map.get(cand) == 1.0:
+                lookup_inst = cand
+                break
+        else:
+            for cand in candidates:
+                if cand in cpu_map or cand in ram_map or cand in disk_map:
+                    lookup_inst = cand
+                    break
+
+        is_up = up_map.get(lookup_inst) == 1.0 or any(up_map.get(cand) == 1.0 for cand in candidates)
+        status = "Healthy" if is_up else "Offline"
+
+        raw_uptime = uptime_map.get(lookup_inst)
+        fmt_uptime = _format_uptime_str(raw_uptime) if raw_uptime is not None else "--"
+
+        has_lhm = s["has_lhm"]
+        # If server is online, fill offline/missing hardware metrics with active telemetry from exporter
+        use_lhm = has_lhm or is_up
+        metrics = {
+            "cpu": r(cpu_map.get(lookup_inst), 1),
+            "ram": r(ram_map.get(lookup_inst), 1),
+            "disk": r(disk_map.get(lookup_inst), 1),
+            "uptime": fmt_uptime,
+            "cpuTemp": r(lhm_cpu_temp, 1) if use_lhm else None,
+            "gpuUsage": r(lhm_gpu_usage, 0) if use_lhm else None,
+            "gpuClock": r(lhm_gpu_clock, 2) if use_lhm else None,
+            "gpuVoltage": r(lhm_gpu_voltage, 3) if use_lhm else None,
+            "gpuMemory": r(lhm_gpu_memory, 0) if use_lhm else None,
+            "ssdTemp": r(lhm_ssd_temp, 0) if use_lhm else None,
+            "networkIn": r(net_in_map.get(lookup_inst), 2),
+            "networkOut": r(net_out_map.get(lookup_inst), 2),
+            "diskRead": r(disk_read_map.get(lookup_inst), 2),
+            "diskWrite": r(disk_write_map.get(lookup_inst), 2),
+            "processes": int(processes_map[lookup_inst]) if lookup_inst in processes_map else None,
+            "threads": int(threads_map[lookup_inst]) if lookup_inst in threads_map else None,
+            "contextSwitches": r(csw_map.get(lookup_inst), 0),
+            "queueLength": r(queue_map.get(lookup_inst), 0),
+            "systemCalls": r(syscalls_map.get(lookup_inst), 0),
+            "exceptions": r(exceptions_map.get(lookup_inst), 2),
+        }
+
+        environment = s["environment"] if s.get("environment") else (db_s.environment if db_s and db_s.environment else "Production")
+
+        servers_data.append({
+            "id": db_s.id if db_s else None,
+            "instance": lookup_inst,
+            "hostname": s["hostname"],
+            "ip": s["ip"],
+            "environment": environment,
+            "status": status,
+            "metrics": metrics,
+        })
+
+    return jsonify(servers_data), 200
 
 
 @dashboard_bp.route("/live/<int:server_id>", methods=["GET"])

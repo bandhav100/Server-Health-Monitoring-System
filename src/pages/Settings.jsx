@@ -128,7 +128,7 @@ const SettingRow = ({ label, description, children, noBorder = false }) => (
 );
 
 const SegmentedControl = ({ value, onChange, options }) => (
-  <div className="segmented-control-bg inline-flex rounded-lg border border-slate-700 bg-slate-800/60 p-1 gap-1">
+  <div className="segmented-control-bg inline-flex flex-wrap rounded-lg border border-slate-700 bg-slate-800/60 p-1 gap-1">
     {options.map((opt) => (
       <button
         key={opt.value}
@@ -1073,11 +1073,11 @@ const Settings = () => {
         </div>
       </div>
 
-      {/* ── Main layout: left nav + content ── */}
-      <div className="flex gap-0 mt-0">
-        {/* Left nav */}
-        <aside className="w-52 flex-shrink-0 pt-4 pr-4">
-          <nav className="space-y-0.5 sticky top-4">
+      {/* ── Main layout: responsive tabs on mobile / side-by-side on desktop ── */}
+      <div className="flex flex-col md:flex-row gap-0 mt-0">
+        {/* Left nav / Mobile horizontal scrollable tab bar */}
+        <aside className="w-full md:w-52 flex-shrink-0 pt-3 md:pt-4 md:pr-4 overflow-x-auto">
+          <nav className="flex md:flex-col gap-1.5 md:space-y-0.5 pb-2 md:pb-0 md:sticky md:top-4 no-scrollbar">
             {NAV_SECTIONS.map(({ id, label, icon: Icon }) => {
               const active = activeSection === id;
               return (
@@ -1085,26 +1085,26 @@ const Settings = () => {
                   key={id}
                   type="button"
                   onClick={() => setActiveSection(id)}
-                  className={`settings-sidebar-link w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium transition-all text-left ${
+                  className={`settings-sidebar-link whitespace-nowrap flex items-center gap-2 md:gap-2.5 px-3 py-2 md:py-2.5 rounded-lg text-xs md:text-sm font-medium transition-all text-left flex-shrink-0 ${
                     active
                       ? 'settings-sidebar-link-active bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border border-[var(--accent-primary)]/20 font-semibold shadow-sm'
                       : 'border border-transparent'
                   }`}
                 >
-                  <Icon size={16} className="flex-shrink-0" />
+                  <Icon size={15} className="flex-shrink-0" />
                   <span>{label}</span>
-                  {active && <ChevronRight size={13} className="ml-auto opacity-80" />}
+                  {active && <ChevronRight size={13} className="ml-auto opacity-80 hidden md:inline" />}
                 </button>
               );
             })}
           </nav>
         </aside>
 
-        {/* Vertical divider */}
-        <div className="w-px bg-slate-800/60 flex-shrink-0 mx-2" />
+        {/* Vertical divider on desktop / horizontal on mobile */}
+        <div className="h-px md:h-auto md:w-px bg-slate-800/60 flex-shrink-0 my-2 md:my-0 md:mx-2" />
 
         {/* Content panel */}
-        <main className="flex-1 min-w-0 pt-4 pl-6">
+        <main className="flex-1 min-w-0 pt-3 md:pt-4 pl-0 md:pl-6 pb-28">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeSection}
@@ -1120,11 +1120,11 @@ const Settings = () => {
       </div>
 
       {/* ── Sticky save bar ── */}
-      <div className="settings-save-bar fixed bottom-0 left-0 right-0 z-50 border-t border-slate-800 bg-slate-950/95 backdrop-blur-xl px-6 py-3.5">
-        <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
+      <div className="settings-save-bar fixed bottom-0 left-0 right-0 z-50 border-t border-slate-800 bg-slate-950/95 backdrop-blur-xl px-4 md:px-6 py-3 md:py-3.5">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
           {/* Status text */}
           <span
-            className={`text-sm font-medium ${
+            className={`text-xs sm:text-sm font-medium text-center sm:text-left ${
               isDirty ? 'text-amber-400' :
               saveStatus === 'saved' ? 'text-emerald-400' :
               saveStatus === 'error' ? 'text-red-400' :
@@ -1135,21 +1135,22 @@ const Settings = () => {
           </span>
 
           {/* Actions */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto justify-end">
             <ActionButton
               onClick={() => setModals((m) => ({ ...m, resetDefaults: true }))}
               disabled={saving}
               variant="default"
             >
               <RotateCcw size={14} />
-              Reset Defaults
+              <span className="hidden xs:inline">Reset Defaults</span>
+              <span className="xs:hidden">Reset</span>
             </ActionButton>
 
             <button
               type="button"
               onClick={handleSave}
               disabled={!isDirty || saving}
-              className={`flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-semibold transition-all shadow-lg ${
+              className={`flex items-center gap-2 px-4 sm:px-5 py-2 rounded-lg text-sm font-semibold transition-all shadow-lg ${
                 isDirty && !saving
                   ? 'bg-[var(--accent-primary)] hover:opacity-90 text-white shadow-[var(--accent-primary)]/20'
                   : saveStatus === 'saved'

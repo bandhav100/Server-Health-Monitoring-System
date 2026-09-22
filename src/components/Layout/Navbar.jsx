@@ -1,10 +1,11 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Bell, LogOut, User, Settings, AlertCircle, AlertTriangle, Info, CheckCircle2 } from 'lucide-react';
+import { Bell, LogOut, User, Settings, AlertCircle, AlertTriangle, Info, CheckCircle2, Menu, Moon, Sun } from 'lucide-react';
 import ServerDropdown from '../UI/ServerDropdown';
 import HeaderClock from './HeaderClock';
 import { useDashboard } from '../../context/DashboardContext';
 import { useSettings } from '../../context/SettingsContext';
+import { useAuth } from '../../context/AuthContext';
 import api from '../../api';
 
 const severityIcon = {
@@ -13,13 +14,13 @@ const severityIcon = {
   info:     <Info size={13} className="text-blue-400 flex-shrink-0 mt-0.5" />,
 };
 
-const Navbar = () => {
+const Navbar = ({ isDesktop = true }) => {
   const navigate = useNavigate();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const dropdownRef = useRef(null);
   const profileRef = useRef(null);
-  const { notifications, setNotifications, dashboardData } = useDashboard();
+  const { notifications, setNotifications, dashboardData, setSidebarOpen } = useDashboard();
   const { isEnabled, formatTimestamp, settings, resolvedTheme, toggleTheme } = useSettings();
 
   const showBadge = isEnabled('show_unread_badge');
@@ -108,18 +109,27 @@ const Navbar = () => {
     } catch { /* silent */ }
   };
 
+  const { user: authUser, logout: authLogout } = useAuth();
+
   const logout = async () => {
-    try { await api.post('/auth/logout'); } finally {
-      localStorage.clear();
-      window.location.href = '/login';
-    }
+    await authLogout();
   };
 
   return (
     <div className="navbar-shell sticky top-0 z-40 border-b border-slate-800/80 bg-[#13151D] text-white">
-      <div className="flex items-center justify-between gap-3 px-4 py-2.5 sm:px-5">
-        {/* Left: branding + server selector */}
-        <div className="flex-1 flex items-center gap-4">
+      <div className="flex items-center justify-between gap-2 px-3 py-2 sm:gap-3 sm:px-5 sm:py-2.5">
+        {/* Left: Hamburger (mobile/tablet) + branding + server selector */}
+        <div className="flex items-center gap-2 sm:gap-4 min-w-0">
+          {!isDesktop && (
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="navbar-icon-btn flex h-9 w-9 items-center justify-center rounded-lg border border-slate-700/80 bg-slate-800/80 text-slate-200 hover:text-white hover:bg-slate-700 transition-colors flex-shrink-0 cursor-pointer"
+              aria-label="Open navigation menu"
+              title="Open menu"
+            >
+              <Menu size={18} />
+            </button>
+          )}
           <div className="hidden lg:block">
             <p className="text-[10px] uppercase tracking-[0.2em] text-slate-300 font-semibold leading-none">SHMS / Control Room</p>
             <p className="text-xs text-slate-400 font-medium mt-1">Infrastructure telemetry</p>
@@ -128,32 +138,39 @@ const Navbar = () => {
         </div>
 
         {/* Right: clock + theme toggle + notification bell + profile */}
-        <div className="flex items-center gap-2 sm:gap-3">
-          {/* Current Time */}
-          <HeaderClock />
+        <div className="flex items-center gap-1.5 sm:gap-3 flex-shrink-0">
+          {/* Current Time - hidden on very small mobile to prevent header overflow */}
+          <div className="hidden sm:block">
+            <HeaderClock />
+          </div>
 
           {/* Vertical divider */}
           <div className="navbar-divider h-6 w-px hidden sm:block" />
 
-          {/* Theme Toggle */}
+          {/* Theme Toggle - Dark Mode ON / OFF */}
           <button
             type="button"
             onClick={toggleTheme}
-            className="theme-toggle-btn inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold transition-all border shadow-sm cursor-pointer"
-            aria-label={`Current theme: ${resolvedTheme === 'dark' ? 'Dark' : 'Light'}. Click to switch to ${resolvedTheme === 'dark' ? 'Light' : 'Dark'} mode`}
+            className="theme-toggle-btn inline-flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs font-semibold transition-all border shadow-xs cursor-pointer flex-shrink-0"
+            aria-label={`Toggle dark mode. Current theme: ${resolvedTheme === 'dark' ? 'Dark' : 'Light'}`}
             title={`Switch to ${resolvedTheme === 'dark' ? 'Light' : 'Dark'} Mode`}
           >
-            {resolvedTheme === 'dark' ? (
-              <>
-                <span className="text-xs leading-none" role="img" aria-label="Moon">🌙</span>
-                <span className="text-[11px] font-medium tracking-wide">Dark</span>
-              </>
-            ) : (
-              <>
-                <span className="text-xs leading-none text-amber-500" role="img" aria-label="Sun">☀</span>
-                <span className="text-[11px] font-medium tracking-wide">Light</span>
-              </>
-            )}
+            <span
+              className={`flex h-4 w-4 items-center justify-center rounded-full transition-all duration-200 ${
+                resolvedTheme === 'dark'
+                  ? 'bg-indigo-500/30 text-indigo-300'
+                  : 'bg-amber-500/20 text-amber-600'
+              }`}
+            >
+              {resolvedTheme === 'dark' ? (
+                <Moon size={11} strokeWidth={2.4} />
+              ) : (
+                <Sun size={11} strokeWidth={2.4} />
+              )}
+            </span>
+            <span className="text-[11px] font-semibold tracking-wide whitespace-nowrap hidden sm:inline">
+              {resolvedTheme === 'dark' ? 'Dark' : 'Light'}
+            </span>
           </button>
 
           {/* Vertical divider */}
@@ -179,7 +196,7 @@ const Navbar = () => {
             </button>
 
             {showNotifications && (
-              <div className="navbar-dropdown notifications-dropdown absolute right-0 top-12 w-96 rounded-xl shadow-2xl z-50 overflow-hidden border">
+              <div className="navbar-dropdown notifications-dropdown fixed sm:absolute right-3 sm:right-0 top-14 sm:top-12 w-[calc(100vw-24px)] sm:w-96 max-w-sm rounded-xl shadow-2xl z-50 overflow-hidden border">
                 {/* Dropdown header */}
                 <div className="flex items-center justify-between px-4 py-3 border-b">
                   <div className="flex items-center gap-2">
@@ -280,6 +297,10 @@ const Navbar = () => {
 
             {showProfileMenu && (
               <div className="navbar-dropdown profile-dropdown absolute right-0 mt-2 w-48 rounded-lg shadow-lg border">
+                <div className="px-4 py-2 border-b border-slate-800 text-xs">
+                  <p className="text-slate-400 font-medium">Signed in as</p>
+                  <p className="text-white font-semibold truncate">{authUser?.username || 'shms@admin'}</p>
+                </div>
                 <button onClick={() => { setShowProfileMenu(false); navigate('/profile'); }} className="w-full text-left px-4 py-2 text-sm flex items-center gap-2 border-b cursor-pointer">
                   <User className="w-4 h-4" />
                   Profile

@@ -11,21 +11,219 @@ export const SeverityBadge = ({ severity }) => { const Icon = severityIcon[sever
 export const StatusBadge = ({ status }) => <span className={`alert-status ${(status || 'ACTIVE').toLowerCase()}`}>{status || 'ACTIVE'}</span>;
 export const AlertSummaryCards = ({ summary, loading }) => { const cards = [{ label: 'Active Alerts', value: summary?.active_alerts, tone: summary?.active_alerts ? 'critical' : 'healthy', icon: ShieldAlert }, { label: 'Critical Alerts', value: summary?.critical_alerts, tone: 'critical', icon: AlertCircle }, { label: 'Warning Alerts', value: summary?.warning_alerts, tone: 'warning', icon: AlertTriangle }, { label: 'Resolved Today', value: summary?.resolved_today, tone: 'info', icon: CheckCircle2 }]; return <section className="alerts-summary-grid">{cards.map(({ label, value, tone, icon: Icon }) => <article className={`alerts-summary-card ${tone}`} key={label}><span><Icon size={17} /></span><div><p>{label}</p><strong>{loading ? '...' : value}</strong></div></article>)}</section>; };
 
-export const LiveAlertTable = ({ alerts, onAcknowledge, onResolve, onDetails }) => <div className="alerts-table-scroll"><table className="alerts-table"><thead><tr><th>Severity</th><th>Metric</th><th>Server</th><th>Current</th><th>Threshold</th><th>Status</th><th>Time</th><th>Actions</th></tr></thead><tbody>{alerts.map((alert) => <tr key={alert.id}><td><SeverityBadge severity={alert.severity} /></td><td><b>{alert.metric}</b><small>{alert.category}</small></td><td><span className="alert-server"><Server size={12} />{alert.server_name}</span></td><td>{Number(alert.current_value ?? 0).toFixed(2)}</td><td>{Number(alert.threshold_value ?? 0).toFixed(2)}</td><td><StatusBadge status={alert.status} /></td><td>{new Date(alert.created_at).toLocaleString()}</td><td><div className="alert-actions">{alert.status === 'ACTIVE' && <button onClick={() => onAcknowledge(alert.id)}>Acknowledge</button>}<button onClick={() => onResolve(alert.id)}>Resolve</button><button onClick={() => onDetails(alert)}>Details</button></div></td></tr>)}</tbody></table></div>;
-
-const chartTooltip = ({ active, payload, label }) => active && payload?.length ? <div className="alerts-tooltip"><strong>{new Date(label).toLocaleString()}</strong>{payload.map((item) => <span key={item.dataKey} style={{ color: item.color }}>{item.name}: {item.value}</span>)}</div> : null;
-export const AlertTimelineChart = ({ data }) => {
-  const { chartTheme } = useSettings();
-  return <div className="alerts-chart"><ResponsiveContainer width="100%" height="100%"><BarChart data={data}><CartesianGrid stroke={chartTheme?.grid || '#E8EDF3'} vertical={false} /><XAxis dataKey="time" tickFormatter={(value) => new Date(value).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} tick={{ fontSize: 10, fill: chartTheme?.tick || '#94A3B8' }} minTickGap={24} /><YAxis allowDecimals={false} tick={{ fontSize: 10, fill: chartTheme?.tick || '#94A3B8' }} /><Tooltip content={chartTooltip} /><Bar dataKey="critical" name="Critical" stackId="severity" fill="#DC2626" /><Bar dataKey="warning" name="Warning" stackId="severity" fill="#D97706" /><Bar dataKey="info" name="Info" stackId="severity" fill="#2563EB" /></BarChart></ResponsiveContainer></div>;
+export const LiveAlertTable = ({ alerts = [], onAcknowledge, onResolve, onDetails }) => {
+  const list = Array.isArray(alerts) ? alerts : [];
+  return (
+    <div className="alerts-table-scroll">
+      <table className="alerts-table">
+        <thead>
+          <tr>
+            <th>Severity</th>
+            <th>Metric</th>
+            <th>Server</th>
+            <th>Current</th>
+            <th>Threshold</th>
+            <th>Status</th>
+            <th>Time</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {list.map((alert) => (
+            <tr key={alert.id}>
+              <td><SeverityBadge severity={alert.severity} /></td>
+              <td><b>{alert.metric}</b><small>{alert.category}</small></td>
+              <td><span className="alert-server"><Server size={12} />{alert.server_name}</span></td>
+              <td>{Number(alert.current_value ?? 0).toFixed(2)}</td>
+              <td>{Number(alert.threshold_value ?? 0).toFixed(2)}</td>
+              <td><StatusBadge status={alert.status} /></td>
+              <td>{new Date(alert.created_at).toLocaleString()}</td>
+              <td>
+                <div className="alert-actions">
+                  {alert.status === 'ACTIVE' && (
+                    <button onClick={() => onAcknowledge && onAcknowledge(alert.id)}>Acknowledge</button>
+                  )}
+                  <button onClick={() => onResolve && onResolve(alert.id)}>Resolve</button>
+                  <button onClick={() => onDetails && onDetails(alert)}>Details</button>
+                </div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
 };
-export const SeverityDonutChart = ({ data }) => <div className="alerts-donut"><ResponsiveContainer width="58%" height="100%"><PieChart><Pie data={data} dataKey="value" nameKey="name" innerRadius={58} outerRadius={86} paddingAngle={3}>{data.map((item) => <Cell key={item.name} fill={{ Critical: '#DC2626', Warning: '#D97706', Info: '#2563EB', Resolved: '#94A3B8' }[item.name]} />)}</Pie><Tooltip /></PieChart></ResponsiveContainer><div className="donut-center"><strong>{data.reduce((sum, item) => sum + item.value, 0)}</strong><span>Total alerts</span></div><div className="donut-legend">{data.map((item) => <span key={item.name}><i style={{ background: { Critical: '#DC2626', Warning: '#D97706', Info: '#2563EB', Resolved: '#94A3B8' }[item.name] }} />{item.name}<b>{item.value}</b></span>)}</div></div>;
-export const CategoryBarChart = ({ data }) => {
+
+const chartTooltip = ({ active, payload, label }) => active && payload?.length ? (
+  <div className="alerts-tooltip">
+    <strong>{new Date(label).toLocaleString()}</strong>
+    {payload.map((item) => (
+      <span key={item.dataKey} style={{ color: item.color }}>{item.name}: {item.value}</span>
+    ))}
+  </div>
+) : null;
+
+export const AlertTimelineChart = ({ data = [] }) => {
   const { chartTheme } = useSettings();
-  return <div className="alerts-category-chart"><ResponsiveContainer width="100%" height="100%"><BarChart data={data} layout="vertical" margin={{ left: 18, right: 12 }}><CartesianGrid stroke={chartTheme?.grid || '#E8EDF3'} horizontal={false} /><XAxis type="number" allowDecimals={false} tick={{ fontSize: 10, fill: chartTheme?.tick || '#94A3B8' }} /><YAxis type="category" dataKey="category" width={78} tick={{ fontSize: 10, fill: chartTheme?.tick || '#64748B' }} /><Tooltip /><Bar dataKey="count" name="Alerts" fill="#2563EB" radius={[0, 4, 4, 0]} /></BarChart></ResponsiveContainer></div>;
+  const list = Array.isArray(data) ? data : [];
+  return (
+    <div className="alerts-chart">
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart data={list}>
+          <CartesianGrid stroke={chartTheme?.grid || '#E8EDF3'} vertical={false} />
+          <XAxis
+            dataKey="time"
+            tickFormatter={(value) => new Date(value).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            tick={{ fontSize: 10, fill: chartTheme?.tick || '#94A3B8' }}
+            minTickGap={24}
+          />
+          <YAxis allowDecimals={false} tick={{ fontSize: 10, fill: chartTheme?.tick || '#94A3B8' }} />
+          <Tooltip content={chartTooltip} />
+          <Bar dataKey="critical" name="Critical" stackId="severity" fill="#DC2626" />
+          <Bar dataKey="warning" name="Warning" stackId="severity" fill="#D97706" />
+          <Bar dataKey="info" name="Info" stackId="severity" fill="#2563EB" />
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
+  );
 };
 
-export const AlertHistoryTable = ({ alerts }) => <div className="alerts-table-scroll"><table className="alerts-table history"><thead><tr><th>Time</th><th>Server</th><th>Metric</th><th>Value</th><th>Threshold</th><th>Severity</th><th>Status</th><th>Duration</th></tr></thead><tbody>{alerts.map((alert) => <tr key={alert.id}><td>{new Date(alert.created_at).toLocaleString()}</td><td>{alert.server_name}</td><td>{alert.metric}</td><td>{Number(alert.current_value ?? 0).toFixed(2)}</td><td>{Number(alert.threshold_value ?? 0).toFixed(2)}</td><td><SeverityBadge severity={alert.severity} /></td><td><StatusBadge status={alert.status} /></td><td>{alert.resolved_at ? `${Math.max(0, Math.round((new Date(alert.resolved_at) - new Date(alert.created_at)) / 60000))} min` : 'Active'}</td></tr>)}</tbody></table></div>;
-export const TopServersTable = ({ servers }) => <div className="alerts-table-scroll"><table className="alerts-table top-servers"><thead><tr><th>Server</th><th>Total</th><th>Critical</th><th>Warning</th><th>Last Alert</th></tr></thead><tbody>{servers.map((server) => <tr key={server.server_name}><td><span className="alert-server"><Server size={12} />{server.server_name}</span></td><td><b>{server.total_alerts}</b></td><td>{server.critical || 0}</td><td>{server.warning || 0}</td><td>{new Date(server.last_alert_time).toLocaleString()}</td></tr>)}</tbody></table></div>;
+export const SeverityDonutChart = ({ data = [] }) => {
+  const list = Array.isArray(data) ? data : [];
+  const total = list.reduce((sum, item) => sum + (Number(item?.value) || 0), 0);
+  return (
+    <div className="alerts-donut">
+      <ResponsiveContainer width="58%" height="100%">
+        <PieChart>
+          <Pie data={list} dataKey="value" nameKey="name" innerRadius={58} outerRadius={86} paddingAngle={3}>
+            {list.map((item) => (
+              <Cell
+                key={item.name}
+                fill={{ Critical: '#DC2626', Warning: '#D97706', Info: '#2563EB', Resolved: '#94A3B8' }[item.name] || '#94A3B8'}
+              />
+            ))}
+          </Pie>
+          <Tooltip />
+        </PieChart>
+      </ResponsiveContainer>
+      <div className="donut-center">
+        <strong>{total}</strong>
+        <span>Total alerts</span>
+      </div>
+      <div className="donut-legend">
+        {list.map((item) => (
+          <span key={item.name}>
+            <i style={{ background: { Critical: '#DC2626', Warning: '#D97706', Info: '#2563EB', Resolved: '#94A3B8' }[item.name] || '#94A3B8' }} />
+            {item.name}
+            <b>{item.value ?? 0}</b>
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export const CategoryBarChart = ({ data = [] }) => {
+  const { chartTheme } = useSettings();
+  const list = Array.isArray(data) ? data : [];
+  return (
+    <div className="alerts-category-chart">
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart data={list} layout="vertical" margin={{ left: 18, right: 12 }}>
+          <CartesianGrid stroke={chartTheme?.grid || '#E8EDF3'} horizontal={false} />
+          <XAxis type="number" allowDecimals={false} tick={{ fontSize: 10, fill: chartTheme?.tick || '#94A3B8' }} />
+          <YAxis type="category" dataKey="category" width={78} tick={{ fontSize: 10, fill: chartTheme?.tick || '#64748B' }} />
+          <Tooltip />
+          <Bar dataKey="count" name="Alerts" fill="#2563EB" radius={[0, 4, 4, 0]} />
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
+  );
+};
+
+export const AlertHistoryTable = ({ alerts = [] }) => {
+  const list = Array.isArray(alerts) ? alerts : [];
+  return (
+    <div className="alerts-table-scroll">
+      <table className="alerts-table history">
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Server</th>
+            <th>Metric</th>
+            <th>Value</th>
+            <th>Threshold</th>
+            <th>Severity</th>
+            <th>Status</th>
+            <th>Duration</th>
+          </tr>
+        </thead>
+        <tbody>
+          {list.length > 0 ? (
+            list.map((alert) => (
+              <tr key={alert.id}>
+                <td>{new Date(alert.created_at).toLocaleString()}</td>
+                <td>{alert.server_name}</td>
+                <td>{alert.metric}</td>
+                <td>{Number(alert.current_value ?? 0).toFixed(2)}</td>
+                <td>{Number(alert.threshold_value ?? 0).toFixed(2)}</td>
+                <td><SeverityBadge severity={alert.severity} /></td>
+                <td><StatusBadge status={alert.status} /></td>
+                <td>{alert.resolved_at ? `${Math.max(0, Math.round((new Date(alert.resolved_at) - new Date(alert.created_at)) / 60000))} min` : 'Active'}</td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="8" style={{ textAlign: 'center', padding: '24px', color: '#94A3B8' }}>
+                No alert records found.
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
+export const TopServersTable = ({ servers = [] }) => {
+  const list = Array.isArray(servers) ? servers : [];
+  return (
+    <div className="alerts-table-scroll">
+      <table className="alerts-table top-servers">
+        <thead>
+          <tr>
+            <th>Server</th>
+            <th>Total</th>
+            <th>Critical</th>
+            <th>Warning</th>
+            <th>Last Alert</th>
+          </tr>
+        </thead>
+        <tbody>
+          {list.length > 0 ? (
+            list.map((server) => (
+              <tr key={server.server_name}>
+                <td><span className="alert-server"><Server size={12} />{server.server_name}</span></td>
+                <td><b>{server.total_alerts}</b></td>
+                <td>{server.critical || 0}</td>
+                <td>{server.warning || 0}</td>
+                <td>{new Date(server.last_alert_time).toLocaleString()}</td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="5" style={{ textAlign: 'center', padding: '20px', color: '#94A3B8' }}>
+                No server alert activity.
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
 export const EmptyAlerts = ({ message }) => <div className="alerts-empty"><CheckCircle2 size={18} />{message}</div>;
 
 export const AlertChartPanel = ({

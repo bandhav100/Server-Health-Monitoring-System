@@ -16,20 +16,30 @@ analytics_bp = Blueprint("analytics", __name__)
 
 
 def _instance():
-    return request.args.get("instance", "", type=str).strip()
+    srv = _resolve_server()
+    if srv and srv.prometheus_instance:
+        return srv.prometheus_instance
+    raw = request.args.get("instance", "", type=str).strip()
+    if raw.lower() in ("bandhav", "100.84.0.9", "100.84.0.9:9182", "localhost:9182", "host.docker.internal:9182"):
+        return "host.docker.internal:9182"
+    return raw
 
 
 def _resolve_server():
     server_id = request.args.get("server_id", type=int)
     if server_id:
-        return Server.query.get(server_id)
-    instance = _instance()
-    if not instance or instance.upper() == "ALL":
+        srv = Server.query.get(server_id)
+        if srv:
+            return srv
+    raw = request.args.get("instance", "", type=str).strip()
+    if not raw or raw.upper() == "ALL":
         return None
+    ip = raw.split(":")[0]
     return Server.query.filter(
-        (Server.prometheus_instance == instance)
-        | (Server.tailscale_ip == instance.split(":")[0])
-        | (Server.name == instance)
+        (Server.prometheus_instance == raw)
+        | (Server.tailscale_ip == ip)
+        | (Server.ip_address == ip)
+        | (Server.name.ilike(raw))
     ).first()
 
 
@@ -407,7 +417,7 @@ def disk_io():
     selector = _selector(_instance(), 'volume="C:"')
     expressions = {
         "read": f'rate(windows_logical_disk_read_bytes_total{selector}[1m]) / 1024^2',
-        "write": f'rate(windows_logical_disk_written_bytes_total{selector}[1m]) / 1024^2',
+        "write": f'rate(windows_logical_disk_write_bytes_total{selector}[1m]) / 1024^2',
         "readOps": f'rate(windows_logical_disk_reads_total{selector}[1m])',
         "writeOps": f'rate(windows_logical_disk_writes_total{selector}[1m])',
     }
@@ -472,13 +482,19 @@ def temperature():
     error = _require_instance()
     if error:
         return error
-    selector = _selector(_instance())
-    lhm_instance = os.getenv("LHM_INSTANCE", "localhost:8085")
+    service = PrometheusService()
     expressions = {
-        "cpu": f'lhm_cpu_temperature_celsius{{instance="{lhm_instance}",job="hardware_monitor",sensorName="Core (Tctl/Tdie)"}}',
-        "ssd": f'lhm_storage_temperature_celsius{{instance="{lhm_instance}",job="hardware_monitor",sensorName="Composite Temperature"}}',
+        "cpu": 'lhm_cpu_temperature_celsius{sensorName="Core (Tctl/Tdie)"}',
+        "ssd": 'lhm_storage_temperature_celsius{sensorName="Composite Temperature"}',
     }
-    return _response(_range_query(PrometheusService(), expressions, metric_type="temperature"))
+    res = _range_query(service, expressions, metric_type="temperature")
+    tr = _time_range()
+    # Fallback to avg if specific sensorName returned no points
+    if not res.get("cpu"):
+        res["cpu"] = _series(service.query('avg(lhm_cpu_temperature_celsius)', start=tr["start"], end=tr["end"], step=tr["step"]))
+    if not res.get("ssd"):
+        res["ssd"] = _series(service.query('avg(lhm_storage_temperature_celsius)', start=tr["start"], end=tr["end"], step=tr["step"]))
+    return _response(res)
 
 
 @analytics_bp.route("/processes", methods=["GET"])

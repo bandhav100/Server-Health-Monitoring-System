@@ -1,23 +1,32 @@
 global:
   scrape_interval: 15s
+  evaluation_interval: 15s
 
 scrape_configs:
 
-  - job_name: prometheus
+  # Prometheus
+  - job_name: "prometheus"
     static_configs:
       - targets:
-          - prometheus:9090
+          - "prometheus:9090"
 
-  - job_name: windows_exporter
+  # Windows Exporters (SHMS Team)
+  - job_name: "windows_exporter"
+    metrics_path: /metrics
     static_configs:
       - targets:
-          - host.docker.internal:9182
-        labels:
-          instance: "100.84.0.9:9182"
+          - "host.docker.internal:9182"   # Bandhav (Docker -> Windows)
+          - "100.95.242.5:9182"           # Abhi
+          - "100.104.89.32:9182"          # Manju
+          - "100.102.76.81:9182"          # Sai Vinay
+          - "100.72.224.107:9182"         # Navadeep
 
-  - job_name: hardware_monitor
+  # LibreHardwareMonitor Sensors
+  - job_name: "hardware_monitor"
+    metrics_path: /metrics
     static_configs:
       - targets:
-          - lhm-exporter:9105
+          - "lhm-exporter:9105"
         labels:
-          instance: "host.docker.internal:8085"
+          hostname: "Bandhav"
+

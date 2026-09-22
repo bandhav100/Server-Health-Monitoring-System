@@ -1,12 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { useDashboard } from '../../context/DashboardContext';
 import { useServerContext } from '../../context/ServerContext';
 
 const ServerDropdown = ({ servers = [], query = '' }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null);
   const { selectedServerKey, serverOptions } = useDashboard();
   const { setSelectedServer } = useServerContext();
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setIsOpen(false);
+      }
+    };
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isOpen]);
 
   const liveServers = serverOptions.map((option) => ({
     ...option,
@@ -28,20 +41,21 @@ const ServerDropdown = ({ servers = [], query = '' }) => {
   };
 
   return (
-    <div className="relative">
+    <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="server-dropdown-btn flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-[#182234] border border-cyan-500/30 hover:bg-[#1f2b42] text-white text-xs font-semibold shadow-sm transition-all cursor-pointer"
+        className="server-dropdown-btn flex items-center gap-1.5 sm:gap-2.5 px-2.5 sm:px-4 py-1.5 rounded-full bg-[#182234] border border-cyan-500/30 hover:bg-[#1f2b42] text-white text-xs font-semibold shadow-sm transition-all cursor-pointer"
+        aria-label="Select server"
       >
-        <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.7)]" />
-        <span className="truncate max-w-[150px] font-medium">
+        <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.7)] flex-shrink-0" />
+        <span className="truncate max-w-[85px] sm:max-w-[150px] font-medium text-xs">
           {selectedServerKey === 'ALL' ? 'All Servers' : serverOptions.find((option) => option.key === selectedServerKey)?.name || 'All Servers'}
         </span>
-        <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+        <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform flex-shrink-0 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
       {isOpen && (
-        <div className="server-dropdown-menu absolute top-full mt-2 w-64 bg-slate-800 border border-slate-700 rounded-lg shadow-lg z-50">
+        <div className="server-dropdown-menu absolute top-full left-0 mt-2 w-64 max-w-[calc(100vw-24px)] bg-slate-800 border border-slate-700 rounded-lg shadow-lg z-50">
           <div className="p-2">
             {filteredServers.length > 0 ? (
               <>

@@ -318,3 +318,57 @@ html[data-theme="dark"] .analytics-error-banner {
   color: #94A3B8;
   font-size: 11px;
 }
+
+/* Responsive Overhaul */
+@media (max-width: 768px) {
+  .analytics-toolbar {
+    width: 100%;
+    justify-content: flex-start;
+    gap: 6px;
+  }
+  .analytics-toolbar select {
+    flex: 1;
+    min-width: 0;
+  }
+  .analytics-heatmap {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .thermal-summary {
+    grid-template-columns: 1fr;
+  }
+  .analytics-donut {
+    flex-direction: column;
+    gap: 16px;
+  }
+  .analytics-donut-center {
+    position: static;
+    transform: none;
+    margin-bottom: -30px;
+  }
+  .analytics-donut-legend {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .analytics-heatmap {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .analytics-chart {
+    height: 190px;
+  }
+  .analytics-panel {
+    padding: 12px;
+  }
+  .analytics-heading h2 {
+    font-size: 16px;
+  }
+  .analytics-stats {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .analytics-legend {
+    gap: 8px;
+  }
+}
+

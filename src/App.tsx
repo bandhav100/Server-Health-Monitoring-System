@@ -1,5 +1,7 @@
 import { BrowserRouter as Router, Navigate, Routes, Route, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
+import { AuthProvider } from './context/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
 import { DashboardProvider } from './context/DashboardContext';
 import { ServerProvider } from './context/ServerContext';
 import { SettingsProvider, useSettings } from './context/SettingsContext';
@@ -10,8 +12,7 @@ import Predictions from './pages/Predictions';
 import Alerts from './pages/Alerts';
 import Logs from './pages/Logs';
 import DockerPage from './pages/Docker';
-import GrafanaPage from './pages/GrafanaPage';
-import SetupGuide from './pages/SetupGuide';
+import Grafana from './pages/Grafana';
 import Reports from './pages/Reports';
 import Settings from './pages/Settings';
 import Profile from './pages/Profile';
@@ -52,7 +53,6 @@ function RootRedirect() {
 }
 
 function ProtectedApp() {
-  if (!localStorage.getItem('token')) return <Login />;
   return (
     <SettingsProvider>
       <DashboardProvider>
@@ -60,6 +60,7 @@ function ProtectedApp() {
           <LastPageTracker />
           <Routes>
             <Route path="/" element={<RootRedirect />} />
+            <Route path="/dashboard" element={<Navigate to="/monitoring" replace />} />
             <Route path="/servers" element={<Servers />} />
             <Route path="/monitoring" element={<LiveMonitoring />} />
             <Route path="/live" element={<Navigate to="/monitoring" replace />} />
@@ -67,12 +68,13 @@ function ProtectedApp() {
             <Route path="/alerts" element={<Alerts />} />
             <Route path="/logs" element={<Logs />} />
             <Route path="/docker" element={<DockerPage />} />
-            <Route path="/grafana" element={<GrafanaPage />} />
-            <Route path="/setup-guide" element={<SetupGuide />} />
+            <Route path="/grafana" element={<Grafana />} />
+            <Route path="/setup-guide" element={<Navigate to="/servers" replace />} />
             <Route path="/reports" element={<Reports />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/system-health" element={<SystemHealth />} />
+            <Route path="*" element={<Navigate to="/servers" replace />} />
           </Routes>
         </Layout>
       </DashboardProvider>
@@ -83,12 +85,21 @@ function ProtectedApp() {
 function App() {
   return (
     <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-      <ServerProvider>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="*" element={<ProtectedApp />} />
-        </Routes>
-      </ServerProvider>
+      <AuthProvider>
+        <ServerProvider>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route
+              path="/*"
+              element={
+                <ProtectedRoute>
+                  <ProtectedApp />
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+        </ServerProvider>
+      </AuthProvider>
     </Router>
   );
 }

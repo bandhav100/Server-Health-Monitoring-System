@@ -1,5 +1,20 @@
 services:
 
+  postgres:
+    image: postgres:15-alpine
+    container_name: shms-postgres
+
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: bandhav1
+      POSTGRES_DB: shms
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+    restart: unless-stopped
+
+
   backend:
     build:
       context: ./backend
@@ -8,7 +23,7 @@ services:
     container_name: shms-backend
 
     ports:
-      - "5000:5000"
+      - "127.0.0.1:5000:5000"
 
     extra_hosts:
       - "host.docker.internal:host-gateway"
@@ -17,38 +32,73 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
 
     environment:
-      FLASK_ENV: ${FLASK_ENV}
-      FLASK_HOST: ${FLASK_HOST}
-      FLASK_PORT: ${FLASK_PORT}
-      FLASK_DEBUG: ${FLASK_DEBUG}
+      FLASK_ENV: production
+      FLASK_HOST: 0.0.0.0
+      FLASK_PORT: 5000
+      FLASK_DEBUG: "0"
 
-      DATABASE_URL: ${DATABASE_URL}
+      DATABASE_URL: postgresql://postgres:bandhav1@postgres:5432/shms
 
-      SECRET_KEY: ${SECRET_KEY}
-      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      SECRET_KEY: replace-with-your-secure-secret-key
+      JWT_SECRET_KEY: replace-with-your-secure-jwt-secret-key
 
-      PROMETHEUS_URL: ${PROMETHEUS_URL}
+      PROMETHEUS_URL: http://prometheus:9090
+      WINDOWS_EXPORTER_URL: http://host.docker.internal:9182/
+      LHM_INSTANCE: host.docker.internal:8085
 
-      WINDOWS_EXPORTER_URL: ${WINDOWS_EXPORTER_URL}
-      LHM_INSTANCE: ${LHM_INSTANCE}
+      GRAFANA_URL: http://grafana:3000
+      GRAFANA_API_URL: http://grafana:3000/api
+      GRAFANA_API_TOKEN: ""
 
-      GRAFANA_URL: ${GRAFANA_URL}
-      GRAFANA_API_URL: ${GRAFANA_API_URL}
-      GRAFANA_API_TOKEN: ${GRAFANA_API_TOKEN}
+      CLOUDFLARE_TUNNEL_URL: ""
 
-      ML_SERVICE_URL: ${ML_SERVICE_URL}
-      PREDICTION_SERVICE_URL: ${PREDICTION_SERVICE_URL}
+      ML_SERVICE_URL: http://host.docker.internal:8000
+      PREDICTION_SERVICE_URL: http://host.docker.internal:8000
 
-      ADMIN_USERNAME: ${ADMIN_USERNAME}
-      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      ADMIN_USERNAME: shms@admin
+      ADMIN_PASSWORD: bandhav1
 
-      CORS_ORIGINS: ${CORS_ORIGINS}
+      CORS_ORIGINS: https://bandhav-1.tail84beab.ts.net,http://localhost:5173,http://127.0.0.1:5173
 
-      LOG_DIR: ${LOG_DIR}
+      LOG_DIR: /var/log/shms
+
+    depends_on:
+      - postgres
+      - prometheus
+      - lhm-exporter
+      - grafana
+
+    restart: unless-stopped
+
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: shms-grafana
+
+    ports:
+      - "127.0.0.1:3001:3000"
+
+    environment:
+      GF_SECURITY_ALLOW_EMBEDDING: "true"
+      GF_SECURITY_COOKIE_SECURE: "false"
+      GF_SECURITY_COOKIE_SAMESITE: disabled
+
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+      GF_AUTH_DISABLE_LOGIN_FORM: "true"
+      GF_USERS_ALLOW_SIGN_UP: "false"
+
+      GF_SERVER_SERVE_FROM_SUB_PATH: "true"
+      GF_SERVER_ROOT_URL: "%(protocol)s://%(domain)s/grafana/"
+
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./grafana/provisioning/dashboards/json:/etc/grafana/provisioning/dashboards/json:ro
 
     depends_on:
       - prometheus
-      - lhm-exporter
 
     restart: unless-stopped
 
@@ -63,19 +113,22 @@ services:
     ports:
       - "5173:80"
 
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
     depends_on:
       - backend
+      - grafana
 
     restart: unless-stopped
 
 
   prometheus:
     image: prom/prometheus:latest
-
     container_name: shms-prometheus
 
     ports:
-      - "9090:9090"
+      - "127.0.0.1:9090:9090"
 
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
@@ -107,4 +160,6 @@ services:
 
 
 volumes:
+  postgres_data:
   prometheus_data:
+  grafana_data:

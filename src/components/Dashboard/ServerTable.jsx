@@ -36,7 +36,7 @@ const ServerTable = ({ servers, onEdit, onDelete }) => {
               transition={{ delay: idx * 0.05 }}
               onClick={() => handleServerClick(server.hostname || server.name)}
             >
-              <td className="px-4 py-3 font-medium text-white">{server.hostname || server.name || 'localhost'}</td>
+              <td className="px-4 py-3 font-medium text-white">{server.hostname || server.name || 'Server'}</td>
               <td className="px-4 py-3 text-gray-400">{server.ip || server.tailscale_ip || 'No address'}</td>
               <td className="px-4 py-3 text-gray-400">{server.operating_system || '—'}</td>
               <td className="px-4 py-3">

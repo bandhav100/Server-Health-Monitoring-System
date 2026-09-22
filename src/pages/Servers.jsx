@@ -1,17 +1,14 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   Server,
-  Wifi,
   CheckCircle2,
   XCircle,
   Clock,
   RefreshCw,
   Search,
   ChevronDown,
-  ChevronLeft,
-  ChevronRight,
   Cpu,
   MoreVertical,
   Check,
@@ -20,11 +17,17 @@ import {
   ArrowUp,
   ArrowDown,
   Activity,
-  TrendingUp,
   Copy,
   Plus,
+  Wifi,
+  WifiOff,
+  AlertTriangle,
+  Layers,
+  HardDrive,
+  Network as NetworkIcon,
 } from 'lucide-react';
-import { useDashboard } from '../context/DashboardContext';
+import axiosClient, { unwrap } from '../axiosClient';
+import { useAuth } from '../context/AuthContext';
 import AddServerModal from '../components/Servers/AddServerModal';
 import './Servers.css';
 
@@ -34,34 +37,22 @@ const WindowsIcon = () => (
   </svg>
 );
 
-const formatTime = (date) => {
-  if (!date) return '21:53:47';
-  return date.toLocaleTimeString([], { hour12: false });
-};
-
 const formatUptime = (value) => {
   if (value == null || Number.isNaN(Number(value)) || Number(value) <= 0) return '--';
   const totalMinutes = Math.floor(Number(value) * 60);
   const days = Math.floor(totalMinutes / 1440);
   const hours = Math.floor((totalMinutes % 1440) / 60);
   const minutes = totalMinutes % 60;
-  if (days > 0) return `${days}d ${hours}h ${minutes}m`;
+  if (days > 0) return `${days}d ${hours}h`;
   if (hours > 0) return `${hours}h ${minutes}m`;
   return `${minutes}m`;
 };
 
-/**
- * Reusable MetricProgressBar component bound to real percentage values:
- * - Clamps width to [0, 100]%
- * - Displays exact rounded percentage
- * - Blue for CPU, Orange for RAM, Red for Disk
- * - Width = 0% and label = '--' when value is null/undefined/NaN or server is offline
- */
 export const MetricProgressBar = ({ value, metricType = 'cpu', color, isOffline = false }) => {
   const defaultColors = {
-    cpu: '#3B82F6',   // Blue fill
-    ram: '#F59E0B',   // Orange/amber fill
-    disk: '#EF4444',  // Red/coral fill
+    cpu: '#3B82F6', // Blue fill
+    ram: '#F59E0B', // Orange/amber fill
+    disk: '#EF4444', // Red/coral fill
   };
   const barColor = color || defaultColors[metricType] || '#3B82F6';
 
@@ -114,38 +105,102 @@ const StatusBadge = ({ status }) => {
   const isHealthy = status === 'healthy';
   const isPending = status === 'pending';
 
+  if (isHealthy) {
+    return (
+      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-sm">
+        <Check size={11} strokeWidth={3} />
+        Healthy
+      </span>
+    );
+  }
+
   if (isPending) {
     return (
-      <span className="server-status-pill pending" title="Awaiting Prometheus scrape">
-        <Clock size={12} strokeWidth={2.5} />
+      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20 shadow-sm" title="Awaiting scrape response">
+        <Clock size={11} strokeWidth={2.5} />
         Pending
       </span>
     );
   }
 
   return (
-    <span className={`server-status-pill ${isHealthy ? 'healthy' : 'offline'}`}>
-      {isHealthy ? <Check size={12} strokeWidth={3} /> : <X size={12} strokeWidth={3} />}
-      {isHealthy ? 'Healthy' : 'Offline'}
+    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/20 shadow-sm">
+      <X size={11} strokeWidth={3} />
+      Offline
     </span>
   );
 };
 
 const Servers = () => {
   const navigate = useNavigate();
-  const { servers, serverOptions, refreshServers } = useDashboard();
-  const [query, setQuery] = useState('');
-  const [selected, setSelected] = useState('ALL');
-  const [sort, setSort] = useState({ key: null, direction: 'desc' });
-  const [lastRefresh, setLastRefresh] = useState(new Date());
+  const { user } = useAuth();
+
+  const [servers, setServers] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState(null);
+  const [lastRefresh, setLastRefresh] = useState(null);
+  const [copiedIp, setCopiedIp] = useState(null);
+
+  const [query, setQuery] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState('ALL');
+  const [sort, setSort] = useState({ key: null, direction: 'desc' });
   const [activeActionId, setActiveActionId] = useState(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const actionMenuRef = useRef(null);
+  const [isOnline, setIsOnline] = useState(typeof navigator !== 'undefined' ? navigator.onLine : true);
 
+  const actionMenuRef = useRef(null);
+  const isMountedRef = useRef(true);
+
+  // Online status listeners
   useEffect(() => {
-    setLastRefresh(new Date());
-  }, [servers]);
+    const onOnline = () => setIsOnline(true);
+    const onOffline = () => setIsOnline(false);
+    window.addEventListener('online', onOnline);
+    window.addEventListener('offline', onOffline);
+    return () => {
+      window.removeEventListener('online', onOnline);
+      window.removeEventListener('offline', onOffline);
+    };
+  }, []);
+
+  // Fetch servers from /api/servers
+  const fetchServers = useCallback(async (isInitial = false) => {
+    if (isInitial) setLoading(true);
+    else setRefreshing(true);
+    setError(null);
+
+    try {
+      const response = await axiosClient.get('/servers');
+      const data = unwrap(response) || [];
+      if (!isMountedRef.current) return;
+      setServers(Array.isArray(data) ? data : []);
+      setLastRefresh(new Date());
+    } catch (err) {
+      if (!isMountedRef.current) return;
+      setError('Unable to fetch servers inventory. Check backend connection.');
+    } finally {
+      if (isMountedRef.current) {
+        setLoading(false);
+        setRefreshing(false);
+      }
+    }
+  }, []);
+
+  // Auto-refresh every 15 seconds
+  useEffect(() => {
+    isMountedRef.current = true;
+    fetchServers(true);
+
+    const timer = setInterval(() => {
+      fetchServers(false);
+    }, 15000);
+
+    return () => {
+      isMountedRef.current = false;
+      clearInterval(timer);
+    };
+  }, [fetchServers]);
 
   // Click outside to close action menu
   useEffect(() => {
@@ -160,31 +215,44 @@ const Servers = () => {
 
   const totalServers = servers.length;
   const healthyCount = servers.filter((s) => s.status === 'healthy').length;
-  const offlineCount = totalServers - healthyCount;
+  const pendingCount = servers.filter((s) => s.status === 'pending').length;
+  const offlineCount = servers.filter((s) => s.status === 'offline' || s.status === 'down').length;
+
   const healthyPct = totalServers ? Math.round((healthyCount / totalServers) * 100) : 0;
+  const pendingPct = totalServers ? Math.round((pendingCount / totalServers) * 100) : 0;
   const offlinePct = totalServers ? Math.round((offlineCount / totalServers) * 100) : 0;
 
   const onlineServers = servers.filter((s) => s.status === 'healthy');
   const averageCpu = onlineServers.length
     ? Math.round(onlineServers.reduce((tot, s) => tot + Number(s.cpu || 0), 0) / onlineServers.length)
-    : 12;
+    : '--';
 
-  const discoveredOptions = servers.length ? serverOptions : [];
+  const copyIp = (ip, e) => {
+    e.stopPropagation();
+    if (!ip || ip === '--') return;
+    navigator.clipboard.writeText(ip);
+    setCopiedIp(ip);
+    setTimeout(() => setCopiedIp(null), 2000);
+  };
 
   const filteredServers = useMemo(() => {
     const search = query.trim().toLowerCase();
     const rows = servers.filter((server) => {
-      const hostname = server.displayName || server.hostname || server.name || '';
-      const ip = server.ip || server.tailscale_ip || '';
+      const hostname = server.hostname || server.name || '';
+      const displayName = server.displayName || '';
+      const ip = server.ip || server.tailscale_ip || server.ip_address || '';
       const os = server.operating_system || server.operatingSystem || 'windows';
+      const env = server.environment || 'Production';
+
       const matchesSearch =
         !search ||
-        `${hostname} ${ip} ${os} ${server.prometheus_instance || ''}`.toLowerCase().includes(search);
-      const matchesSelected =
-        selected === 'ALL' ||
-        server.prometheus_instance === selected ||
-        hostname.toLowerCase() === selected.toLowerCase();
-      return matchesSearch && matchesSelected;
+        `${hostname} ${displayName} ${ip} ${os} ${env}`.toLowerCase().includes(search);
+
+      const matchesStatus =
+        selectedStatus === 'ALL' ||
+        (server.status && server.status.toLowerCase() === selectedStatus.toLowerCase());
+
+      return matchesSearch && matchesStatus;
     });
 
     if (!sort.key) return rows;
@@ -192,15 +260,14 @@ const Servers = () => {
     return [...rows].sort((a, b) => {
       let aVal = a[sort.key];
       let bVal = b[sort.key];
+
       if (sort.key === 'status') {
-        aVal = a.status === 'healthy' ? 1 : 0;
-        bVal = b.status === 'healthy' ? 1 : 0;
-      } else if (sort.key === 'uptime') {
-        aVal = Number(a.uptime || 0);
-        bVal = Number(b.uptime || 0);
-      } else if (sort.key === 'hostname') {
-        aVal = (a.displayName || a.hostname || a.name || '').toLowerCase();
-        bVal = (b.displayName || b.hostname || b.name || '').toLowerCase();
+        const order = { healthy: 3, pending: 2, offline: 1, down: 0 };
+        aVal = order[a.status] || 0;
+        bVal = order[b.status] || 0;
+      } else if (sort.key === 'hostname' || sort.key === 'displayName') {
+        aVal = (a[sort.key] || a.name || '').toLowerCase();
+        bVal = (b[sort.key] || b.name || '').toLowerCase();
         return sort.direction === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
       } else {
         aVal = Number(aVal || 0);
@@ -208,7 +275,7 @@ const Servers = () => {
       }
       return sort.direction === 'asc' ? aVal - bVal : bVal - aVal;
     });
-  }, [query, selected, servers, sort]);
+  }, [query, selectedStatus, servers, sort]);
 
   const toggleSort = (key) => {
     setSort((curr) => ({
@@ -222,85 +289,117 @@ const Servers = () => {
     return sort.direction === 'asc' ? <ArrowUp size={11} /> : <ArrowDown size={11} />;
   };
 
-  const handleRefresh = async () => {
-    setRefreshing(true);
-    if (refreshServers) refreshServers();
-    setLastRefresh(new Date());
-    setTimeout(() => setRefreshing(false), 600);
-  };
-
   return (
     <motion.div
-      className="servers-container"
+      className="servers-container space-y-6 w-full max-w-full text-slate-100"
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.25 }}
     >
-      {/* ── HEADER ────────────────────────────────────────── */}
-      <header className="servers-header-row">
-        <div className="servers-brand">
-          <div className="servers-brand-icon">
-            <Server size={22} strokeWidth={2} />
+      {/* Offline Banner */}
+      {!isOnline && (
+        <div className="flex items-center gap-3 p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300">
+          <WifiOff className="w-5 h-5 flex-shrink-0 text-amber-400" />
+          <div className="flex-1 text-sm font-medium">
+            Internet connection lost. Server metrics will resume upon reconnecting.
           </div>
-          <div className="servers-brand-text">
-            <h1>Servers</h1>
-            <p>Live infrastructure inventory from Prometheus.</p>
+        </div>
+      )}
+
+      {/* ── HEADER & TELEMETRY BAR ────────────────────────── */}
+      <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-800">
+        <div className="flex items-center gap-3">
+          <div className="p-3 rounded-2xl bg-blue-500/10 text-blue-400 border border-blue-500/20">
+            <Server size={24} strokeWidth={2} />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">Servers Fleet</h1>
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                15s Live Sync
+              </span>
+            </div>
+            <p className="text-xs sm:text-sm text-slate-400 mt-0.5">
+              Live Windows fleet discovery, metrics, and health scores.
+            </p>
           </div>
         </div>
 
-        <div className="servers-header-badges">
-          <span className="shms-pill-badge badge-connected">
-            <Wifi size={13} strokeWidth={2.4} />
-            Connected Targets <b>{totalServers}</b>
-          </span>
-          <span className="shms-pill-badge badge-online">
-            <CheckCircle2 size={13} strokeWidth={2.4} />
-            Online <b>{healthyCount}</b>
-          </span>
-          <span className="shms-pill-badge badge-offline">
-            <XCircle size={13} strokeWidth={2.4} />
-            Offline <b>{offlineCount}</b>
-          </span>
-          <span className="shms-pill-badge badge-time">
-            <Clock size={13} />
-            Last Refresh <b>{formatTime(lastRefresh)}</b>
-          </span>
-          <button className="badge-autorefresh" onClick={handleRefresh} title="Click to refresh now">
-            <RefreshCw size={12} className={refreshing ? 'animate-spin' : ''} />
-            Auto Refresh <span>• 15s</span>
+        {/* Status Chips and Refresh Controls */}
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+          <div
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border ${
+              isOnline
+                ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+                : 'bg-rose-500/10 text-rose-400 border-rose-500/20'
+            }`}
+          >
+            {isOnline ? <Wifi className="w-3.5 h-3.5" /> : <WifiOff className="w-3.5 h-3.5" />}
+            <span>{isOnline ? 'Connected' : 'Offline'}</span>
+          </div>
+
+          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-slate-400 bg-slate-900 border border-slate-800">
+            <Clock className="w-3.5 h-3.5 text-slate-500" />
+            <span>{lastRefresh ? lastRefresh.toLocaleTimeString() : 'Syncing...'}</span>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => fetchServers(false)}
+            disabled={refreshing || loading}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 transition-all cursor-pointer disabled:opacity-50"
+            title="Refresh servers list"
+          >
+            <RefreshCw size={13} className={refreshing ? 'animate-spin' : ''} />
+            <span>Refresh</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setIsAddModalOpen(true)}
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white shadow-sm transition-all cursor-pointer"
+            title="Add a new server"
+          >
+            <Plus size={14} strokeWidth={2.5} />
+            <span>Add Server</span>
           </button>
         </div>
       </header>
 
-      {/* ── 4 KPI CARDS ───────────────────────────────────── */}
-      <section className="servers-kpis-grid" aria-label="Server Summary Statistics">
-        {/* Card 1: Total Servers */}
+      {/* Error alert with retry */}
+      {error && (
+        <div className="flex items-center justify-between gap-3 p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-sm">
+          <div className="flex items-center gap-2">
+            <AlertTriangle className="w-5 h-5 flex-shrink-0" />
+            <span>{error}</span>
+          </div>
+          <button
+            onClick={() => fetchServers(true)}
+            className="px-3 py-1 text-xs font-semibold rounded-lg bg-rose-500/20 hover:bg-rose-500/30 text-rose-200 cursor-pointer"
+          >
+            Retry
+          </button>
+        </div>
+      )}
+
+      {/* ── KPI METRICS CARDS ─────────────────────────────── */}
+      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="servers-kpi-card">
-          <div className="servers-kpi-icon-wrap purple">
-            <Server size={20} strokeWidth={2.2} />
+          <div className="servers-kpi-icon-wrap blue">
+            <Server size={22} strokeWidth={2.4} />
           </div>
           <div className="servers-kpi-body">
             <div className="servers-kpi-label-row">
-              <span className="servers-kpi-label">Total Servers</span>
+              <span className="servers-kpi-label">Discovered Servers</span>
+              <span className="servers-kpi-badge">Fleet</span>
             </div>
             <div className="servers-kpi-val">{totalServers}</div>
-          </div>
-          <div className="servers-kpi-ghost">
-            <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#6366F1" strokeWidth="1.5">
-              <rect x="2" y="3" width="20" height="5" rx="1.5" />
-              <circle cx="6" cy="5.5" r="0.75" fill="#6366F1" />
-              <circle cx="9" cy="5.5" r="0.75" fill="#6366F1" />
-              <rect x="2" y="10" width="20" height="5" rx="1.5" />
-              <circle cx="6" cy="12.5" r="0.75" fill="#6366F1" />
-              <circle cx="9" cy="12.5" r="0.75" fill="#6366F1" />
-              <rect x="2" y="17" width="20" height="5" rx="1.5" />
-              <circle cx="6" cy="19.5" r="0.75" fill="#6366F1" />
-              <circle cx="9" cy="19.5" r="0.75" fill="#6366F1" />
-            </svg>
+            <div className="servers-kpi-bar">
+              <div className="servers-kpi-fill blue" style={{ width: '100%' }} />
+            </div>
           </div>
         </div>
 
-        {/* Card 2: Healthy Servers */}
         <div className="servers-kpi-card">
           <div className="servers-kpi-icon-wrap green">
             <CheckCircle2 size={22} strokeWidth={2.4} />
@@ -308,7 +407,7 @@ const Servers = () => {
           <div className="servers-kpi-body">
             <div className="servers-kpi-label-row">
               <span className="servers-kpi-label">Healthy Servers</span>
-              <span className="servers-kpi-percentage">{healthyPct}%</span>
+              <span className="servers-kpi-percentage text-emerald-400">{healthyPct}%</span>
             </div>
             <div className="servers-kpi-val">{healthyCount}</div>
             <div className="servers-kpi-bar">
@@ -317,7 +416,22 @@ const Servers = () => {
           </div>
         </div>
 
-        {/* Card 3: Offline Servers */}
+        <div className="servers-kpi-card">
+          <div className="servers-kpi-icon-wrap amber">
+            <Clock size={22} strokeWidth={2.4} />
+          </div>
+          <div className="servers-kpi-body">
+            <div className="servers-kpi-label-row">
+              <span className="servers-kpi-label">Pending / Scrape</span>
+              <span className="servers-kpi-percentage text-amber-400">{pendingPct}%</span>
+            </div>
+            <div className="servers-kpi-val">{pendingCount}</div>
+            <div className="servers-kpi-bar">
+              <div className="servers-kpi-fill amber" style={{ width: `${pendingPct}%` }} />
+            </div>
+          </div>
+        </div>
+
         <div className="servers-kpi-card">
           <div className="servers-kpi-icon-wrap red">
             <XCircle size={22} strokeWidth={2.4} />
@@ -325,7 +439,7 @@ const Servers = () => {
           <div className="servers-kpi-body">
             <div className="servers-kpi-label-row">
               <span className="servers-kpi-label">Offline Servers</span>
-              <span className="servers-kpi-percentage">{offlinePct}%</span>
+              <span className="servers-kpi-percentage text-rose-400">{offlinePct}%</span>
             </div>
             <div className="servers-kpi-val">{offlineCount}</div>
             <div className="servers-kpi-bar">
@@ -333,287 +447,235 @@ const Servers = () => {
             </div>
           </div>
         </div>
-
-        {/* Card 4: Average CPU Usage */}
-        <div className="servers-kpi-card">
-          <div className="servers-kpi-icon-wrap amber">
-            <Cpu size={20} strokeWidth={2.2} />
-          </div>
-          <div className="servers-kpi-body">
-            <div className="servers-kpi-label-row">
-              <span className="servers-kpi-label">Average CPU Usage</span>
-            </div>
-            <div className="servers-kpi-val">{averageCpu}%</div>
-            <div className="servers-kpi-bar">
-              <div className="servers-kpi-fill amber" style={{ width: `${averageCpu}%` }} />
-            </div>
-          </div>
-          <div className="servers-kpi-ghost">
-            <Cpu size={56} strokeWidth={1.3} className="text-amber-400" />
-          </div>
-        </div>
       </section>
 
-      {/* ── TOOLBAR / SEARCH / ACTIONS ────────────────────── */}
-      <div className="servers-filter-toolbar">
-        <div className="servers-search-input-wrap">
-          <Search size={16} />
+      {/* ── TOOLBAR / SEARCH / STATUS FILTER ──────────────── */}
+      <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between p-3 rounded-2xl bg-black border border-[#1f1f1f]">
+        <div className="relative flex-1">
+          <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
           <input
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search servers by name, IP, or OS..."
-            aria-label="Search servers"
+            placeholder="Search by Hostname, Display Name, IP, or Environment..."
+            className="w-full pl-10 pr-4 py-2 rounded-xl bg-[#0a0a0a] border border-[#222222] text-white placeholder-slate-500 text-xs sm:text-sm focus:outline-none focus:border-blue-500 transition-colors"
           />
         </div>
 
-        <div className="servers-dropdown-wrap">
-          <select value={selected} onChange={(e) => setSelected(e.target.value)} aria-label="Server filter">
-            <option value="ALL">All Servers</option>
-            {discoveredOptions.map((option) => (
-              <option key={option.key} value={option.instance || option.key}>
-                {option.name}
-              </option>
-            ))}
+        <div className="flex items-center gap-2">
+          <select
+            value={selectedStatus}
+            onChange={(e) => setSelectedStatus(e.target.value)}
+            className="px-3 py-2 rounded-xl bg-[#0a0a0a] border border-[#222222] text-white text-xs sm:text-sm focus:outline-none focus:border-blue-500 cursor-pointer"
+          >
+            <option value="ALL">All Statuses</option>
+            <option value="healthy">Healthy</option>
+            <option value="pending">Pending</option>
+            <option value="offline">Offline</option>
           </select>
-          <ChevronDown size={14} className="servers-dropdown-arrow" />
         </div>
-
-        <button type="button" className="servers-action-refresh-btn" onClick={handleRefresh}>
-          <RefreshCw size={14} className={refreshing ? 'animate-spin' : ''} />
-          Refresh
-        </button>
-
-        <button
-          type="button"
-          className="servers-action-add-btn"
-          onClick={() => setIsAddModalOpen(true)}
-          title="Register a new monitoring target"
-        >
-          <Plus size={15} strokeWidth={2.5} />
-          Add Server
-        </button>
       </div>
 
       {/* ── SERVERS TABLE ─────────────────────────────────── */}
-      <div className="servers-table-card">
-        <div className="servers-table-scroll-container">
-          <table className="servers-data-table">
+      <div className="rounded-2xl bg-black border border-[#1f1f1f] shadow-xl overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-xs sm:text-sm">
             <thead>
-              <tr>
-                <th>
-                  <button type="button" onClick={() => toggleSort('hostname')}>
+              <tr className="border-b border-[#1f1f1f] text-slate-400 bg-[#0a0a0a] select-none">
+                <th className="py-3.5 px-4 font-semibold uppercase tracking-wider text-[11px]">
+                  <button type="button" onClick={() => toggleSort('displayName')} className="flex items-center gap-1">
+                    DISPLAY NAME {getSortIcon('displayName')}
+                  </button>
+                </th>
+                <th className="py-3.5 px-4 font-semibold uppercase tracking-wider text-[11px]">
+                  <button type="button" onClick={() => toggleSort('hostname')} className="flex items-center gap-1">
                     HOSTNAME {getSortIcon('hostname')}
                   </button>
                 </th>
-                <th>
-                  <button type="button" onClick={() => toggleSort('ip')}>
-                    IP ADDRESS {getSortIcon('ip')}
-                  </button>
-                </th>
-                <th>
-                  <button type="button" onClick={() => toggleSort('operating_system')}>
-                    OS {getSortIcon('operating_system')}
-                  </button>
-                </th>
-                <th>
-                  <button type="button" onClick={() => toggleSort('cpu')}>
-                    CPU {getSortIcon('cpu')}
-                  </button>
-                </th>
-                <th>
-                  <button type="button" onClick={() => toggleSort('ram')}>
-                    RAM {getSortIcon('ram')}
-                  </button>
-                </th>
-                <th>
-                  <button type="button" onClick={() => toggleSort('disk')}>
-                    DISK {getSortIcon('disk')}
-                  </button>
-                </th>
-                <th>
-                  <button type="button" onClick={() => toggleSort('uptime')}>
-                    UPTIME {getSortIcon('uptime')}
-                  </button>
-                </th>
-                <th>
-                  <button type="button" onClick={() => toggleSort('status')}>
+                <th className="py-3.5 px-4 font-semibold uppercase tracking-wider text-[11px]">
+                  <button type="button" onClick={() => toggleSort('status')} className="flex items-center gap-1">
                     STATUS {getSortIcon('status')}
                   </button>
                 </th>
-                <th style={{ textAlign: 'center' }}>ACTIONS</th>
+                <th className="py-3.5 px-4 font-semibold uppercase tracking-wider text-[11px]">
+                  <button type="button" onClick={() => toggleSort('cpu')} className="flex items-center gap-1">
+                    CPU % {getSortIcon('cpu')}
+                  </button>
+                </th>
+                <th className="py-3.5 px-4 font-semibold uppercase tracking-wider text-[11px]">
+                  <button type="button" onClick={() => toggleSort('ram')} className="flex items-center gap-1">
+                    RAM % {getSortIcon('ram')}
+                  </button>
+                </th>
+                <th className="py-3.5 px-4 font-semibold uppercase tracking-wider text-[11px]">
+                  <button type="button" onClick={() => toggleSort('disk')} className="flex items-center gap-1">
+                    DISK % {getSortIcon('disk')}
+                  </button>
+                </th>
+                <th className="py-3.5 px-4 font-semibold uppercase tracking-wider text-[11px]">
+                  NETWORK
+                </th>
+                <th className="py-3.5 px-4 font-semibold uppercase tracking-wider text-[11px]">
+                  <button type="button" onClick={() => toggleSort('uptime')} className="flex items-center gap-1">
+                    UPTIME {getSortIcon('uptime')}
+                  </button>
+                </th>
+                <th className="py-3.5 px-4 font-semibold uppercase tracking-wider text-[11px]">
+                  HEALTH
+                </th>
+                <th className="py-3.5 px-4 font-semibold uppercase tracking-wider text-[11px]">
+                  ENVIRONMENT
+                </th>
+                <th className="py-3.5 px-4 font-semibold uppercase tracking-wider text-[11px]">
+                  TAILSCALE IP
+                </th>
               </tr>
             </thead>
-            <tbody>
-              {filteredServers.map((server) => {
-                const hostname = server.displayName || server.hostname || server.name || 'Unknown server';
-                const isProduction =
-                  (server.environment && server.environment.toLowerCase() === 'production') ||
-                  (server.role && server.role.toLowerCase() === 'production') ||
-                  hostname.toLowerCase() === 'bandhav';
-                const subtitle = server.role || server.environment || (isProduction ? 'Production' : 'Windows');
-                const ipAddress = server.ip || server.tailscale_ip || '--';
-                const isOffline = server.status !== 'healthy';
-                const rawOs = server.operating_system || server.operatingSystem || 'windows';
-                const osLabel = rawOs ? rawOs.charAt(0).toUpperCase() + rawOs.slice(1).toLowerCase() : 'Windows';
-                const rowKey = String(server.id || server.prometheus_instance || hostname);
-
-                return (
-                  <tr key={rowKey}>
-                    {/* Hostname */}
-                    <td>
-                      <div className="server-host-cell">
-                        <div className="server-host-avatar">
-                          <Server size={17} />
-                        </div>
-                        <div className="server-host-meta">
-                          <strong>{hostname}</strong>
-                          <small>{subtitle}</small>
-                        </div>
-                      </div>
-                    </td>
-
-                    {/* IP Address */}
-                    <td className="server-ip-cell">{ipAddress}</td>
-
-                    {/* OS */}
-                    <td>
-                      <div className="server-os-cell">
-                        <WindowsIcon />
-                        <span>{osLabel}</span>
-                      </div>
-                    </td>
-
-                    {/* CPU Bar (Blue fill) */}
-                    <td>
-                      <MetricProgressBar value={server.cpu} metricType="cpu" isOffline={isOffline} />
-                    </td>
-
-                    {/* RAM Bar (Orange/amber fill) */}
-                    <td>
-                      <MetricProgressBar value={server.ram} metricType="ram" isOffline={isOffline} />
-                    </td>
-
-                    {/* DISK Bar (Red/coral fill) */}
-                    <td>
-                      <MetricProgressBar value={server.disk} metricType="disk" isOffline={isOffline} />
-                    </td>
-
-                    {/* Uptime */}
-                    <td style={{ color: '#334155', fontWeight: 500 }}>
-                      {isOffline ? '--' : formatUptime(server.uptime)}
-                    </td>
-
-                    {/* Status */}
-                    <td>
-                      <StatusBadge status={server.status} />
-                    </td>
-
-                    {/* Actions */}
-                    <td style={{ textAlign: 'center' }}>
-                      <div
-                        className="server-action-menu-wrap"
-                        ref={activeActionId === rowKey ? actionMenuRef : null}
-                      >
-                        <button
-                          className={`server-row-action-btn ${activeActionId === rowKey ? 'active' : ''}`}
-                          onClick={() => setActiveActionId(activeActionId === rowKey ? null : rowKey)}
-                          title="Server Actions"
-                          aria-label="Server Actions"
-                        >
-                          <MoreVertical size={16} />
-                        </button>
-
-                        {activeActionId === rowKey && (
-                          <div className="server-action-menu">
-                            <button
-                              onClick={() => {
-                                setActiveActionId(null);
-                                navigate('/monitoring');
-                              }}
-                            >
-                              <Activity size={13} /> Live Telemetry
-                            </button>
-                            <button
-                              onClick={() => {
-                                setActiveActionId(null);
-                                navigate('/predictions');
-                              }}
-                            >
-                              <TrendingUp size={13} /> View Predictions
-                            </button>
-                            <button
-                              onClick={() => {
-                                setActiveActionId(null);
-                                if (ipAddress && ipAddress !== '--') {
-                                  navigator.clipboard?.writeText(ipAddress);
-                                }
-                              }}
-                            >
-                              <Copy size={13} /> Copy IP Address
-                            </button>
-                          </div>
-                        )}
-                      </div>
+            <tbody className="divide-y divide-slate-800/60">
+              {loading ? (
+                [...Array(5)].map((_, i) => (
+                  <tr key={i} className="animate-pulse">
+                    <td colSpan={11} className="py-4 px-4">
+                      <div className="h-6 bg-slate-800/40 rounded-lg w-full" />
                     </td>
                   </tr>
-                );
-              })}
+                ))
+              ) : filteredServers.length === 0 ? (
+                <tr>
+                  <td colSpan={11} className="py-12 text-center text-slate-500">
+                    No servers matching filter criteria.
+                  </td>
+                </tr>
+              ) : (
+                filteredServers.map((server) => {
+                  const hostname = server.hostname || server.name || 'Unknown';
+                  const displayName = server.displayName || server.name || hostname;
+                  const isHealthy = server.status === 'healthy';
+                  const tailscaleIp = server.tailscale_ip || server.ip || server.ip_address || '--';
+                  const environment = server.environment || 'Production';
+                  const networkVal = server.network != null ? `${Math.round(server.network)} KB/s` : '--';
+
+                  return (
+                    <tr
+                      key={server.id || hostname}
+                      onClick={() => navigate('/monitoring')}
+                      className="hover:bg-slate-800/40 transition-colors cursor-pointer group"
+                    >
+                      {/* Display Name */}
+                      <td className="py-3.5 px-4">
+                        <div className="flex items-center gap-2">
+                          <WindowsIcon />
+                          <span className="font-semibold text-white group-hover:text-blue-400 transition-colors">
+                            {displayName}
+                          </span>
+                        </div>
+                      </td>
+
+                      {/* Hostname */}
+                      <td className="py-3.5 px-4 font-mono text-slate-300 text-xs">
+                        {hostname}
+                      </td>
+
+                      {/* Status Badge */}
+                      <td className="py-3.5 px-4">
+                        <StatusBadge status={server.status} />
+                      </td>
+
+                      {/* CPU % */}
+                      <td className="py-3.5 px-4 min-w-[130px]">
+                        <MetricProgressBar
+                          value={server.cpu}
+                          metricType="cpu"
+                          isOffline={!isHealthy}
+                        />
+                      </td>
+
+                      {/* RAM % */}
+                      <td className="py-3.5 px-4 min-w-[130px]">
+                        <MetricProgressBar
+                          value={server.ram}
+                          metricType="ram"
+                          isOffline={!isHealthy}
+                        />
+                      </td>
+
+                      {/* Disk % */}
+                      <td className="py-3.5 px-4 min-w-[130px]">
+                        <MetricProgressBar
+                          value={server.disk}
+                          metricType="disk"
+                          isOffline={!isHealthy}
+                        />
+                      </td>
+
+                      {/* Network */}
+                      <td className="py-3.5 px-4 font-mono text-slate-400 text-xs">
+                        {networkVal}
+                      </td>
+
+                      {/* Uptime */}
+                      <td className="py-3.5 px-4 font-mono text-slate-300 text-xs">
+                        {formatUptime(server.uptime)}
+                      </td>
+
+                      {/* Health Score */}
+                      <td className="py-3.5 px-4">
+                        {server.healthScore != null ? (
+                          <span
+                            className={`font-semibold text-xs px-2 py-0.5 rounded-md border ${
+                              server.healthScore >= 80
+                                ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+                                : server.healthScore >= 50
+                                ? 'bg-amber-500/10 text-amber-400 border-amber-500/20'
+                                : 'bg-rose-500/10 text-rose-400 border-rose-500/20'
+                            }`}
+                          >
+                            {server.healthScore}/100
+                          </span>
+                        ) : (
+                          <span className="text-slate-500 text-xs">--</span>
+                        )}
+                      </td>
+
+                      {/* Environment */}
+                      <td className="py-3.5 px-4">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-slate-800 text-slate-300 border border-slate-700">
+                          {environment}
+                        </span>
+                      </td>
+
+                      {/* Tailscale IP */}
+                      <td className="py-3.5 px-4">
+                        <button
+                          type="button"
+                          onClick={(e) => copyIp(tailscaleIp, e)}
+                          className="inline-flex items-center gap-1.5 font-mono text-xs text-blue-400 hover:text-blue-300 transition-colors cursor-pointer group/ip"
+                          title="Click to copy Tailscale IP"
+                        >
+                          <span>{tailscaleIp}</span>
+                          {copiedIp === tailscaleIp ? (
+                            <Check size={12} className="text-emerald-400" />
+                          ) : (
+                            <Copy size={12} className="opacity-0 group-hover/ip:opacity-100 text-slate-400" />
+                          )}
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
             </tbody>
           </table>
-
-          {!filteredServers.length && (
-            <div style={{ padding: '40px 20px', textAlign: 'center', color: '#94A3B8', fontSize: '13px' }}>
-              No Prometheus targets match this view.
-            </div>
-          )}
-        </div>
-
-        {/* Table Footer */}
-        <div className="servers-table-footer">
-          <span>Showing {filteredServers.length} of {totalServers} servers</span>
-          <div className="servers-pagination-wrap">
-            <button className="servers-page-btn" disabled title="Previous page">
-              <ChevronLeft size={14} />
-            </button>
-            <button className="servers-page-btn active">1</button>
-            <button className="servers-page-btn" disabled title="Next page">
-              <ChevronRight size={14} />
-            </button>
-          </div>
         </div>
       </div>
 
-      {/* ── BOTTOM GLOBAL FOOTER ──────────────────────────── */}
-      <footer className="servers-global-footer-bar">
-        <div className="servers-global-footer-left">
-          <span className="servers-status-dot-item">
-            <i className="servers-status-dot green" /> Prometheus Targets: {totalServers}
-          </span>
-          <span className="servers-footer-divider">|</span>
-          <span>Windows Exporter Online: {healthyCount}</span>
-          <span className="servers-footer-divider">|</span>
-          <span>Last Sync: {formatTime(lastRefresh)}</span>
-          <span className="servers-footer-divider">|</span>
-          <span>Version: SHMS v3.0.0</span>
-        </div>
-
-        <div className="servers-global-footer-right">
-          <i className="servers-status-dot green" style={{ animation: 'pulse 2s infinite' }} />
-          <span>All Systems Operational</span>
-        </div>
-      </footer>
-
-      {/* ── ADD SERVER MODAL ───────────────────────────────── */}
-      <AddServerModal
-        isOpen={isAddModalOpen}
-        onClose={() => setIsAddModalOpen(false)}
-        onSuccess={() => {
-          if (refreshServers) refreshServers();
-          setLastRefresh(new Date());
-        }}
-        existingServers={servers}
-      />
+      {isAddModalOpen && (
+        <AddServerModal
+          isOpen={isAddModalOpen}
+          onClose={() => setIsAddModalOpen(false)}
+          onSuccess={() => fetchServers(false)}
+        />
+      )}
     </motion.div>
   );
 };

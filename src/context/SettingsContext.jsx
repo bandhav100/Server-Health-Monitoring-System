@@ -192,7 +192,7 @@ export const SettingsProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    if (localStorage.getItem('token')) {
+    if (localStorage.getItem('shms_token') || localStorage.getItem('token')) {
       loadSettings();
     } else {
       setSettingsLoaded(true);
@@ -221,12 +221,15 @@ export const SettingsProvider = ({ children }) => {
     try {
       await api.post('/auth/logout');
     } catch { /* ignore */ }
+    localStorage.removeItem('shms_token');
+    localStorage.removeItem('shms_user');
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     window.location.href = '/login';
   }, []);
 
-  useIdleTimeout(sessionTimeoutMs, handleIdleTimeout, autoLogoutEnabled && !!localStorage.getItem('token'));
+  const hasAuthToken = !!(localStorage.getItem('shms_token') || localStorage.getItem('token'));
+  useIdleTimeout(sessionTimeoutMs, handleIdleTimeout, autoLogoutEnabled && hasAuthToken);
 
   // ── Helper: is a setting a boolean "true" ────────────────────────────────
   const isEnabled = useCallback((key) => settings[key] === 'true', [settings]);
@@ -321,7 +324,7 @@ export const SettingsProvider = ({ children }) => {
       setResolvedTheme(resolved);
     }
 
-    if (localStorage.getItem('token')) {
+    if (localStorage.getItem('shms_token') || localStorage.getItem('token')) {
       try {
         await api.put('/settings', [{ key, value: strVal }]);
       } catch (err) {

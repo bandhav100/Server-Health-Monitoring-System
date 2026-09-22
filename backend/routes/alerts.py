@@ -72,7 +72,7 @@ def alert_summary():
     active = _active_query(server_id).all()
     today = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
     resolved_today = _query(server_id).filter(Alert.status == "RESOLVED", Alert.metric.isnot(None), Alert.resolved_at >= today).count()
-    return api_response(True, "Alert summary fetched", {"active_alerts": len(active), "critical_alerts": sum(alert.severity.lower() == "critical" for alert in active), "warning_alerts": sum(alert.severity.lower() == "warning" for alert in active), "resolved_today": resolved_today, "last_updated": datetime.utcnow().isoformat() + "Z"}, 200)
+    return api_response(True, "Alert summary fetched", {"active_alerts": len(active), "critical_alerts": sum((alert.severity or "").lower() == "critical" for alert in active), "warning_alerts": sum((alert.severity or "").lower() == "warning" for alert in active), "resolved_today": resolved_today, "last_updated": datetime.utcnow().isoformat() + "Z"}, 200)
 
 
 @alerts_bp.route("/alerts/live", methods=["GET"])
@@ -106,7 +106,7 @@ def get_alerts_history():
 def severity_distribution():
     counts = Counter()
     for alert in _query(request.args.get("server_id", type=int)).all():
-        counts["Resolved" if _status(alert) == "RESOLVED" else alert.severity.title()] += 1
+        counts["Resolved" if _status(alert) == "RESOLVED" else (alert.severity or "Info").title()] += 1
     return api_response(True, "Severity distribution fetched", [{"name": name, "value": counts[name]} for name in ("Critical", "Warning", "Info", "Resolved")], 200)
 
 
@@ -122,11 +122,13 @@ def alert_categories():
 def top_servers():
     grouped = {}
     for alert in _query().all():
-        entry = grouped.setdefault(alert.server_id, {"server_name": alert.server.name if alert.server else str(alert.server_id), "total_alerts": 0, "critical": 0, "warning": 0, "last_alert_time": alert.created_at.isoformat() + "Z"})
+        created_str = (alert.created_at.isoformat() + "Z") if alert.created_at else (datetime.utcnow().isoformat() + "Z")
+        entry = grouped.setdefault(alert.server_id, {"server_name": alert.server.name if alert.server else str(alert.server_id), "total_alerts": 0, "critical": 0, "warning": 0, "last_alert_time": created_str})
         entry["total_alerts"] += 1
-        entry[alert.severity.lower()] = entry.get(alert.severity.lower(), 0) + 1
-        if alert.created_at.isoformat() > entry["last_alert_time"]:
-            entry["last_alert_time"] = alert.created_at.isoformat() + "Z"
+        sev = (alert.severity or "info").lower()
+        entry[sev] = entry.get(sev, 0) + 1
+        if alert.created_at and alert.created_at.isoformat() > entry["last_alert_time"]:
+            entry["last_alert_time"] = created_str
     return api_response(True, "Top alert servers fetched", sorted(grouped.values(), key=lambda item: item["total_alerts"], reverse=True), 200)
 
 
@@ -138,15 +140,18 @@ def alert_timeline():
     cutoff = datetime.utcnow() - timedelta(hours=hours)
     buckets = {}
     for alert in _query(request.args.get("server_id", type=int)).filter(Alert.created_at >= cutoff).all():
+        if not alert.created_at:
+            continue
         bucket = alert.created_at.replace(minute=0, second=0, microsecond=0).isoformat() + "Z"
         item = buckets.setdefault(bucket, {"time": bucket, "critical": 0, "warning": 0, "info": 0, "count": 0})
-        severity = alert.severity.lower()
+        severity = (alert.severity or "info").lower()
         item[severity] = item.get(severity, 0) + 1
         item["count"] += 1
     return api_response(True, "Alert timeline fetched", sorted(buckets.values(), key=lambda item: item["time"]), 200)
 
 
 @alerts_bp.route("/alerts/<int:alert_id>/acknowledge", methods=["PATCH", "POST"])
+@alerts_bp.route("/alerts/<int:alert_id>/mark-read", methods=["PATCH", "POST"])
 @jwt_required_api
 def acknowledge_alert(alert_id):
     alert = Alert.query.get_or_404(alert_id)
@@ -205,3 +210,35 @@ def delete_alert(alert_id):
 def evaluate_alerts():
     created = _evaluate()
     return api_response(True, "Alerts evaluated", created, 200)
+
+
+@alerts_bp.route("/alerts/export", methods=["GET"])
+@alerts_bp.route("/alerts/download/csv", methods=["GET"])
+@jwt_required_api
+def export_alerts_csv():
+    import io
+    import csv
+    from flask import Response
+    server_id = request.args.get("server_id", type=int)
+    alerts = _query(server_id).order_by(Alert.created_at.desc()).all()
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["Time", "Server", "Metric", "Value", "Threshold", "Severity", "Status", "Description"])
+    for alert in alerts:
+        writer.writerow([
+            alert.created_at.isoformat() if alert.created_at else "",
+            alert.server.name if alert.server else str(alert.server_id),
+            alert.metric or alert.title,
+            alert.current_value if alert.current_value is not None else "",
+            alert.threshold_value if alert.threshold_value is not None else "",
+            alert.severity,
+            _status(alert),
+            alert.description,
+        ])
+    output.seek(0)
+    return Response(
+        output.getvalue(),
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment; filename=shms-alerts.csv"},
+    )
+

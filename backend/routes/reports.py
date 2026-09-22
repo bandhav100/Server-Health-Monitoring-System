@@ -33,7 +33,7 @@ METRIC_DEFINITIONS = {
     "used_memory": {"name": "Used Memory", "unit": "GB", "prom": "(windows_memory_physical_total_bytes{sel} - windows_memory_available_bytes{sel}) / 1024^3"},
     "free_memory": {"name": "Available Memory", "unit": "GB", "prom": "windows_memory_available_bytes{sel} / 1024^3"},
     "disk_read": {"name": "Disk Read Speed", "unit": "MB/s", "prom": "rate(windows_logical_disk_read_bytes_total{sel}[1m]) / 1024^2"},
-    "disk_write": {"name": "Disk Write Speed", "unit": "MB/s", "prom": "rate(windows_logical_disk_written_bytes_total{sel}[1m]) / 1024^2"},
+    "disk_write": {"name": "Disk Write Speed", "unit": "MB/s", "prom": "rate(windows_logical_disk_write_bytes_total{sel}[1m]) / 1024^2"},
     "processes": {"name": "System Processes", "unit": "count", "prom": "windows_system_processes{sel}"},
     "threads": {"name": "System Threads", "unit": "count", "prom": "windows_system_threads{sel}"},
     "queue": {"name": "Processor Queue", "unit": "length", "prom": "windows_system_processor_queue_length{sel}"},

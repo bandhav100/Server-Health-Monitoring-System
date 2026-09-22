@@ -41,7 +41,7 @@ export const DashboardProvider = ({ children }) => {
 
   useEffect(() => {
     let cancelled = false;
-    if (!localStorage.getItem('token')) {
+    if (!localStorage.getItem('shms_token') && !localStorage.getItem('token')) {
       setAuthReady(true);
       return undefined;
     }

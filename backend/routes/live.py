@@ -89,7 +89,7 @@ def live_kpis():
         "networkIncoming": f'sum(rate(windows_net_bytes_received_total{selector}[5m]))',
         "networkOutgoing": f'sum(rate(windows_net_bytes_sent_total{selector}[5m]))',
         "diskRead": f'sum(rate(windows_logical_disk_read_bytes_total{selector}[5m]))',
-        "diskWrite": f'sum(rate(windows_logical_disk_written_bytes_total{selector}[5m]))',
+        "diskWrite": f'sum(rate(windows_logical_disk_write_bytes_total{selector}[5m]))',
         "processes": f'windows_system_processes{selector}',
         "threads": f'windows_system_threads{selector}',
         "contextSwitches": f'rate(windows_system_context_switches_total{selector}[5m])',
@@ -158,7 +158,7 @@ def live_io():
     instance = _instance()
     expressions = {
         "read": f'sum by(volume)(rate(windows_logical_disk_read_bytes_total{_selector(instance)}[5m]))',
-        "write": f'sum by(volume)(rate(windows_logical_disk_written_bytes_total{_selector(instance)}[5m]))',
+        "write": f'sum by(volume)(rate(windows_logical_disk_write_bytes_total{_selector(instance)}[5m]))',
     }
     return _response(_query_series(expressions, instance))
 
@@ -232,7 +232,7 @@ def live_history():
     expressions = {
         "cpu": f'100 - avg(rate(windows_cpu_time_total{_selector(instance, "mode=\\\"idle\\\"")}[5m])) * 100',
         "diskRead": f'sum(rate(windows_logical_disk_read_bytes_total{_selector(instance)}[5m]))',
-        "diskWrite": f'sum(rate(windows_logical_disk_written_bytes_total{_selector(instance)}[5m]))',
+        "diskWrite": f'sum(rate(windows_logical_disk_write_bytes_total{_selector(instance)}[5m]))',
     }
     data, errors = {}, {}
     for name, expression in expressions.items():

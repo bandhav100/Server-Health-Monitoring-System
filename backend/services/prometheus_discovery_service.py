@@ -28,10 +28,19 @@ def discover_servers(service=None):
             scrape_url = target.get("scrapeUrl") or target.get("globalUrl")
             parsed = urlparse(scrape_url or "")
             instance = parsed.netloc or scrape_url
-        hostname = labels.get("hostname") or labels.get("machine")
-        ip = _host_from_instance(instance)
-        if not hostname or not ip:
-            continue
+        ip = _host_from_instance(instance) or "127.0.0.1"
+        hostname = (
+            labels.get("hostname")
+            or labels.get("machine")
+            or (
+                "Bandhav" if "100.84.0.9" in instance or "host.docker.internal" in instance
+                else "Saivinay" if "100.102.76.81" in instance
+                else "Abhi" if "100.95.242.5" in instance
+                else "Manju" if "100.104.89.32" in instance
+                else "Navadeep" if "100.72.224.107" in instance
+                else instance.split(":")[0]
+            )
+        )
         item = {
             "hostname": hostname,
             "instance": instance,
@@ -40,38 +49,49 @@ def discover_servers(service=None):
             "health": target.get("health", "unknown"),
             "labels": labels,
             "scrape_url": target.get("scrapeUrl"),
-            "os": labels.get("os") or labels.get("operating_system") or labels.get("platform"),
+            "os": labels.get("os") or labels.get("operating_system") or labels.get("platform") or "Windows",
         }
-        current = discovered.get(ip)
-        if current is None or (
-            item["health"] == "up" and current["health"] != "up"
-        ) or (
-            _host_from_instance(item["instance"]) == ip
-            and _host_from_instance(current["instance"]) != ip
-        ):
-            discovered[ip] = item
+        discovered[instance] = item
     return list(discovered.values())
 
 
 def sync_servers(service=None):
-    """Upsert discovered targets by Tailscale IP and remove stale inventory."""
+    """Upsert discovered targets by Prometheus instance or IP and commit."""
     discovered = discover_servers(service)
-    discovered_by_ip = {item["ip"]: item for item in discovered}
-    discovered = list(discovered_by_ip.values())
-    discovered_ips = set(discovered_by_ip)
-    existing = {server.tailscale_ip: server for server in Server.query.all() if server.tailscale_ip}
     synced = []
     for item in discovered:
-        server = existing.get(item["ip"])
+        server = (
+            Server.query.filter_by(prometheus_instance=item["instance"]).first()
+            or Server.query.filter_by(tailscale_ip=item["ip"]).first()
+            or Server.query.filter_by(name=item["hostname"]).first()
+        )
         if server is None:
-            server = Server(tailscale_ip=item["ip"])
-        server.name = item["hostname"]
-        server.tailscale_ip = item["ip"]
-        server.operating_system = item["os"]
-        server.prometheus_instance = item["instance"]
-        server.prometheus_job = item["job"]
-        server.status = "healthy" if item["health"] == "up" else item["health"]
+            server = Server(
+                name=item["hostname"],
+                hostname=item["hostname"],
+                ip_address=item["ip"],
+                tailscale_ip=item["ip"],
+                prometheus_instance=item["instance"],
+                prometheus_job=item["job"],
+                operating_system=item["os"],
+                status="healthy" if item["health"] == "up" else "offline",
+            )
+            db.session.add(server)
+        else:
+            if not server.name:
+                server.name = item["hostname"]
+            server.hostname = server.hostname or item["hostname"]
+            server.prometheus_instance = item["instance"]
+            server.prometheus_job = item["job"]
+            server.status = "healthy" if item["health"] == "up" else "offline"
+            if not server.ip_address:
+                server.ip_address = item["ip"]
         synced.append(server)
+
+    try:
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
 
     return synced
 

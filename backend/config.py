@@ -8,7 +8,7 @@ load_dotenv(BASE_DIR / ".env")
 class Config:
     SECRET_KEY = os.getenv("SECRET_KEY", "dev-key-change-in-production-32-chars!")
     JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "jwt-key-change-in-production-32!!")
-    JWT_ACCESS_TOKEN_EXPIRES = 3600
+    JWT_ACCESS_TOKEN_EXPIRES = 86400 * 30  # 30 days in seconds
     
     # Database resolution: supports direct DATABASE_URL or discrete DB_* parameters
     database_url = os.getenv("DATABASE_URL")
@@ -31,20 +31,25 @@ class Config:
     
     CORS_HEADERS = "Content-Type"
     cors_env = os.getenv("CORS_ORIGINS")
+    default_origins = [
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "http://localhost:5174",
+        "http://127.0.0.1:5174",
+        "http://localhost:5175",
+        "http://127.0.0.1:5175",
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:3001",
+        "http://127.0.0.1:3001",
+    ]
     if cors_env:
-        CORS_ORIGINS = [origin.strip() for origin in cors_env.split(",") if origin.strip()]
+        configured = [origin.strip() for origin in cors_env.split(",") if origin.strip()]
+        CORS_ORIGINS = list(set(default_origins + configured))
     else:
-        CORS_ORIGINS = [
-            "http://localhost:5173",
-            "http://127.0.0.1:5173",
-            "http://localhost:5174",
-            "http://127.0.0.1:5174",
-            "http://localhost:5175",
-            "http://127.0.0.1:5175",
-            "http://localhost:3000",
-        ]
+        CORS_ORIGINS = default_origins
 
-    PROMETHEUS_URL = os.getenv("PROMETHEUS_URL", "http://127.0.0.1:9090")
+    PROMETHEUS_URL = os.getenv("PROMETHEUS_URL", "http://prometheus:9090")
     PROMETHEUS_CONFIG_PATH = os.getenv(
         "PROMETHEUS_CONFIG_PATH",
         r"C:\Users\bandh\Downloads\prometheus-3.14.0.windows-amd64\prometheus-3.14.0.windows-amd64\prometheus.yml",
@@ -53,10 +58,11 @@ class Config:
         "PROMTOOL_PATH",
         r"C:\Users\bandh\Downloads\prometheus-3.14.0.windows-amd64\prometheus-3.14.0.windows-amd64\promtool.exe",
     )
-    WINDOWS_EXPORTER_URL = os.getenv("WINDOWS_EXPORTER_URL", "http://localhost:9182/")
-    GRAFANA_URL = os.getenv("GRAFANA_URL", "http://localhost:3000/")
-    GRAFANA_API_URL = os.getenv("GRAFANA_API_URL", "http://localhost:3000/api")
-    GRAFANA_API_TOKEN = os.getenv("GRAFANA_API_TOKEN")
+    WINDOWS_EXPORTER_URL = os.getenv("WINDOWS_EXPORTER_URL", "http://host.docker.internal:9182/")
+    GRAFANA_URL = os.getenv("GRAFANA_URL", "http://grafana:3000")
+    GRAFANA_API_URL = os.getenv("GRAFANA_API_URL", "http://grafana:3000/api")
+    GRAFANA_API_TOKEN = os.getenv("GRAFANA_API_TOKEN", "")
+    CLOUDFLARE_TUNNEL_URL = os.getenv("CLOUDFLARE_TUNNEL_URL", "")
 
     # Prediction / ML Service URL
     ML_SERVICE_URL = (

@@ -646,3 +646,48 @@ html[data-theme="dark"] .chart-export-toast.success {
   justify-content: center !important;
 }
 
+/* Responsive adjustments for Chart Modal */
+@media (max-width: 768px) {
+  .chart-modal-overlay {
+    padding: 8px;
+  }
+  .chart-modal-dialog {
+    width: calc(100vw - 16px);
+    height: calc(100vh - 16px);
+    max-height: calc(100vh - 16px);
+    border-radius: 12px;
+  }
+  .chart-modal-header {
+    padding: 12px 14px;
+    gap: 8px;
+  }
+  .chart-modal-title-area h2 {
+    font-size: 15px;
+  }
+  .chart-modal-badge {
+    display: none;
+  }
+  .chart-modal-body {
+    padding: 12px 10px;
+  }
+  .chart-modal-content {
+    min-height: 280px;
+  }
+  .chart-modal-footer {
+    padding: 10px 14px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  .chart-modal-updated {
+    text-align: center;
+    font-size: 10px;
+  }
+  .chart-modal-footer-actions {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+  }
+}
+
+
