@@ -1,0 +1,13 @@
+Flask==3.1.0
+Flask-Cors==5.0.0
+Flask-JWT-Extended==4.7.1
+Flask-SQLAlchemy==3.1.1
+APScheduler==3.10.4
+requests==2.32.3
+bcrypt==4.2.0
+python-dotenv==1.1.0
+docker==7.1.0
+psycopg2-binary>=2.9; sys_platform!='win32'
+psycopg2>=2.9; sys_platform=='win32'
+PyYAML==6.0.2
+fpdf2==2.8.4

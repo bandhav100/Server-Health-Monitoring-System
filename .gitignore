@@ -1,0 +1,40 @@
+﻿# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Environment files
+.env
+
+# Generated reports
+backend/exports/
+
+# Node
+node_modules/
+dist/
+
+# Logs
+*.log
+
+# Vite cache
+.vite/
+
+# Hardware snapshots
+lhm-current.json
+
+# Docker / local files
+*.dump
+
+
+# Hardware snapshots
+lhm-current.json
+
+# Database backups
+*.dump
+

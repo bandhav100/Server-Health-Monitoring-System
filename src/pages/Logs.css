@@ -1,0 +1,66 @@
+/* Logs Page Styles */
+.logs-container {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+/* Ensure table cells have bulletproof padding and never collapse */
+.logs-table-cell-time {
+  min-width: 120px;
+  white-space: nowrap;
+}
+
+.logs-table-cell-severity {
+  min-width: 105px;
+  white-space: nowrap;
+}
+
+.logs-table-cell-actor {
+  min-width: 115px;
+  white-space: nowrap;
+}
+
+.logs-table-cell-action {
+  min-width: 140px;
+  white-space: nowrap;
+}
+
+.logs-table-cell-module {
+  min-width: 110px;
+  white-space: nowrap;
+}
+
+.logs-table-cell-details {
+  min-width: 260px;
+  max-width: 480px;
+}
+
+.logs-table-cell-status {
+  min-width: 100px;
+  white-space: nowrap;
+}
+
+/* Donut chart sizing */
+.logs-donut-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 120px;
+  height: 120px;
+  border-radius: 9999px;
+  flex-shrink: 0;
+}
+
+.logs-donut-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  border-radius: 9999px;
+  background-color: #000000;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
+}
