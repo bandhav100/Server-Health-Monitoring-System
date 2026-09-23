@@ -8,88 +8,194 @@ from extensions import db
 from utils.response import api_response
 from utils.logger import logger
 
-
 auth_bp = Blueprint("auth", __name__)
 
 
+# ==========================
+# LOGIN
+# ==========================
 @auth_bp.route("/login", methods=["POST"])
 def login():
     data = request.get_json(silent=True) or {}
+
     username = data.get("username")
     password = data.get("password")
 
     if not username or not password:
-        return api_response(False, "Username and password are required", None, 400)
+        return api_response(
+            False,
+            "Username and password are required",
+            None,
+            400
+        )
 
+    # Authenticate user
     token = AuthService.login(username, password)
+
     if not token:
-        log = AuditLog(actor=username, action="login_failed", details="Invalid login credentials")
+        log = AuditLog(
+            actor=username,
+            action="login_failed",
+            details="Invalid login credentials"
+        )
         db.session.add(log)
         db.session.commit()
-        return api_response(False, "Invalid credentials", None, 401)
+
+        return api_response(
+            False,
+            "Invalid credentials",
+            None,
+            401
+        )
 
     admin = AuthService.get_admin_by_username(username)
-    log = AuditLog(actor=username, action="login", details="Successful login")
+
+    # Audit log
+    log = AuditLog(
+        actor=username,
+        action="login",
+        details="Successful login"
+    )
     db.session.add(log)
     db.session.commit()
-    
-    return api_response(True, "Login successful", {
-        "token": token,
-        "user": admin.to_dict() if admin else {"username": username}
-    }, 200)
+
+    logger.info("User logged in successfully: %s", username)
+
+    # ✅ Frontend-compatible JWT response
+    return api_response(
+        True,
+        "Login successful",
+        {
+            "access_token": token,      # React expects this
+            "token": token,             # Backward compatibility
+            "user": admin.to_dict() if admin else {
+                "username": username,
+                "role": "ADMIN"
+            }
+        },
+        200
+    )
 
 
+# ==========================
+# LOGOUT
+# ==========================
 @auth_bp.route("/logout", methods=["POST"])
 @jwt_required_api
 def logout():
     identity = get_jwt_identity()
+
     admin = Admin.query.get(int(identity))
     actor_name = admin.username if admin else str(identity)
-    
-    log = AuditLog(actor=actor_name, action="logout", details="User logged out")
+
+    log = AuditLog(
+        actor=actor_name,
+        action="logout",
+        details="User logged out"
+    )
+
     db.session.add(log)
     db.session.commit()
+
     logger.info("User logged out: %s", actor_name)
-    return api_response(True, "Logout successful", None, 200)
+
+    return api_response(
+        True,
+        "Logout successful",
+        None,
+        200
+    )
 
 
+# ==========================
+# CURRENT USER
+# ==========================
 @auth_bp.route("/me", methods=["GET"])
 @jwt_required_api
 def me():
     identity = get_jwt_identity()
+
     admin = Admin.query.get(int(identity))
+
     if not admin:
-        return api_response(False, "User not found", None, 404)
-    return api_response(True, "User details fetched", admin.to_dict(), 200)
+        return api_response(
+            False,
+            "User not found",
+            None,
+            404
+        )
+
+    return api_response(
+        True,
+        "User details fetched",
+        admin.to_dict(),
+        200
+    )
 
 
+# ==========================
+# CHANGE PASSWORD
+# ==========================
 @auth_bp.route("/change-password", methods=["POST"])
 @jwt_required_api
 def change_password():
     identity = get_jwt_identity()
+
     admin = Admin.query.get(int(identity))
+
     if not admin:
-        return api_response(False, "User not found", None, 404)
-    
+        return api_response(
+            False,
+            "User not found",
+            None,
+            404
+        )
+
     data = request.get_json(silent=True) or {}
+
     current_password = data.get("current_password")
     new_password = data.get("new_password")
-    
+
     if not current_password or not new_password:
-        return api_response(False, "Current and new passwords are required", None, 400)
-    
+        return api_response(
+            False,
+            "Current and new passwords are required",
+            None,
+            400
+        )
+
     if not AuthService.verify_password(current_password, admin.password_hash):
-        log = AuditLog(actor=admin.username, action="password_change_failed", 
-                       details="Invalid current password")
+        log = AuditLog(
+            actor=admin.username,
+            action="password_change_failed",
+            details="Invalid current password"
+        )
         db.session.add(log)
         db.session.commit()
-        return api_response(False, "Current password is incorrect", None, 401)
-    
+
+        return api_response(
+            False,
+            "Current password is incorrect",
+            None,
+            401
+        )
+
     admin.password_hash = AuthService.hash_password(new_password)
-    log = AuditLog(actor=admin.username, action="password_changed", 
-                   details="Password changed successfully")
+
+    log = AuditLog(
+        actor=admin.username,
+        action="password_changed",
+        details="Password changed successfully"
+    )
+
     db.session.add(log)
     db.session.commit()
-    
+
     logger.info("Password changed for user: %s", admin.username)
-    return api_response(True, "Password changed successfully", None, 200)
+
+    return api_response(
+        True,
+        "Password changed successfully",
+        None,
+        200
+    )
