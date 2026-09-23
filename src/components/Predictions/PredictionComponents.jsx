@@ -2,8 +2,8 @@ import React, { useRef, useState } from 'react';
 import { Activity, AlertTriangle, BrainCircuit, Cpu, HardDrive, MemoryStick, Network, ShieldCheck, Thermometer, TrendingUp } from 'lucide-react';
 import { Area, AreaChart, CartesianGrid, Line, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { useSettings } from '../../context/SettingsContext';
-import ChartActions from '../UI/ChartActions';
-import ChartModal from '../UI/ChartModal';
+import ChartActions from '../ui/ChartActions';
+import ChartModal from '../ui/ChartModal';
 import { exportChartAsCsv, exportChartAsJson, exportChartAsPng } from '../../utils/chartExport';
 
 export const LoadingSkeleton = () => (

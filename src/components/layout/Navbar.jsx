@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Bell, LogOut, User, Settings, AlertCircle, AlertTriangle, Info, CheckCircle2 } from 'lucide-react';
-import ServerDropdown from '../UI/ServerDropdown';
+import ServerDropdown from '../ui/ServerDropdown';
 import HeaderClock from './HeaderClock';
 import { useDashboard } from '../../context/DashboardContext';
 import { useSettings } from '../../context/SettingsContext';

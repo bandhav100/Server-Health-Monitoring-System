@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Container } from 'lucide-react';
-import ChartCard from '../components/UI/ChartCard';
+import ChartCard from '../components/ui/ChartCard';
 import api, { unwrap } from '../api';
 import { useDashboard } from '../context/DashboardContext';
 

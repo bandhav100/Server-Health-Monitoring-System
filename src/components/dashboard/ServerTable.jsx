@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import StatusBadge from '../UI/StatusBadge';
+import StatusBadge from '../ui/StatusBadge';
 import { useDashboard } from '../../context/DashboardContext';
 
 const ServerTable = ({ servers, onEdit, onDelete }) => {

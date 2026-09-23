@@ -3,8 +3,8 @@ import { Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Line, LineChart, P
 import { Download, RefreshCw } from 'lucide-react';
 import api, { unwrap } from '../api';
 import { useSettings } from '../context/SettingsContext';
-import ChartActions from './UI/ChartActions';
-import ChartModal from './UI/ChartModal';
+import ChartActions from './ui/ChartActions';
+import ChartModal from './ui/ChartModal';
 import { exportChartAsCsv, exportChartAsJson, exportChartAsPng } from '../utils/chartExport';
 import './AnalyticsSection.css';
 

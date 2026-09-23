@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { DashboardProvider } from './context/DashboardContext';
 import { ServerProvider } from './context/ServerContext';
 import { SettingsProvider, useSettings } from './context/SettingsContext';
-import Layout from './components/Layout/Layout';
+import Layout from './components/layout/Layout';
 import Servers from './pages/Servers';
 import LiveMonitoring from './pages/LiveMonitoring';
 import Predictions from './pages/Predictions';

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { User, ShieldCheck, KeyRound } from 'lucide-react';
 import { motion } from 'framer-motion';
-import ChartCard from '../components/UI/ChartCard';
+import ChartCard from '../components/ui/ChartCard';
 import api, { unwrap } from '../api';
 
 const Profile = () => {

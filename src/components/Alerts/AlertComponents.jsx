@@ -2,8 +2,8 @@ import React, { useRef, useState } from 'react';
 import { AlertCircle, AlertTriangle, CheckCircle2, Info, Server, ShieldAlert } from 'lucide-react';
 import { Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { useSettings } from '../../context/SettingsContext';
-import ChartActions from '../UI/ChartActions';
-import ChartModal from '../UI/ChartModal';
+import ChartActions from '../ui/ChartActions';
+import ChartModal from '../ui/ChartModal';
 import { exportChartAsCsv, exportChartAsJson, exportChartAsPng } from '../../utils/chartExport';
 
 const severityIcon = { Critical: AlertCircle, Warning: AlertTriangle, Info, Healthy: CheckCircle2 };

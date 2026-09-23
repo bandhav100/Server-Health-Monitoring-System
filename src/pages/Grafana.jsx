@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { BarChart3, ExternalLink, Maximize2, RefreshCw } from 'lucide-react';
-import ChartCard from '../components/UI/ChartCard';
+import ChartCard from '../components/ui/ChartCard';
 import { useDashboard } from '../context/DashboardContext';
 import { buildGrafanaDashboardUrl } from '../data/dashboardData';
 
