@@ -1,40 +1,58 @@
-﻿# Python
+﻿# =========================
+# Python
+# =========================
 __pycache__/
 *.py[cod]
 *.pyo
 *.pyd
+.pytest_cache/
 
 # Virtual environments
 .venv/
 venv/
 env/
 
-# Environment files
+# Environment variables
 .env
+.env.local
 
 # Generated reports
 backend/exports/
 
-# Node
+# =========================
+# React / Node
+# =========================
 node_modules/
 dist/
+.vite/
 
 # Logs
 *.log
+npm-debug.log*
+yarn-debug.log*
 
-# Vite cache
-.vite/
-
+# =========================
 # Hardware snapshots
+# =========================
 lhm-current.json
 
-# Docker / local files
-*.dump
-
-
-# Hardware snapshots
-lhm-current.json
-
+# =========================
 # Database backups
+# =========================
 *.dump
+*.sql
 
+# =========================
+# Docker files (DO NOT PUSH)
+# =========================
+*.tar
+*.zip
+
+# Docker volumes
+postgres_data/
+grafana-storage/
+prometheus_data/
+
+# OS files
+.DS_Store
+Thumbs.db
