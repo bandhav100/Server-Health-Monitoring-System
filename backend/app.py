@@ -59,24 +59,16 @@ def create_app(config_name="default"):
     app.config.from_object(config_by_name[config_name])
 
     db.init_app(app)
-    cors_origins = app.config.get("CORS_ORIGINS", ["http://localhost:5173", "http://127.0.0.1:5173"])
-    if isinstance(cors_origins, str):
-        cors_origins = [o.strip() for o in cors_origins.split(",") if o.strip()]
-    cors_origins_with_tailscale = list(cors_origins) + [
-        r"^https?:\/\/.*\.ts\.net(:\d+)?$",
-        r"^https?:\/\/localhost(:\d+)?$",
-        r"^https?:\/\/127\.0\.0\.1(:\d+)?$",
-    ]
     cors.init_app(
         app,
         resources={
             r"/api/*": {
-                "origins": cors_origins_with_tailscale,
+                "origins": "*",
                 "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
                 "allow_headers": ["Content-Type", "Authorization"],
-                "supports_credentials": True,
             }
         },
+        supports_credentials=True,
     )
     jwt.init_app(app)
 
