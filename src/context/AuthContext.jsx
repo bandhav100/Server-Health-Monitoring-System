@@ -81,8 +81,8 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await axiosClient.post('/auth/login', { username, password });
       const payload = unwrap(response);
-      const jwtToken = payload?.token;
-      const userProfile = payload?.user || { username };
+      const jwtToken = payload?.token || payload?.access_token || response?.data?.token || response?.data?.access_token;
+      const userProfile = payload?.user || response?.data?.user || { username };
 
       if (!jwtToken) {
         throw new Error('Authentication succeeded but no JWT was received.');

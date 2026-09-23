@@ -6,8 +6,8 @@ BASE_DIR = Path(__file__).resolve().parent
 load_dotenv(BASE_DIR / ".env")
 
 class Config:
-    SECRET_KEY = os.getenv("SECRET_KEY", "dev-key-change-in-production-32-chars!")
-    JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "jwt-key-change-in-production-32!!")
+    SECRET_KEY = os.getenv("SECRET_KEY") or "dev-key-change-in-production-32-chars!"
+    JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY") or os.getenv("SECRET_KEY") or "jwt-key-change-in-production-32!!"
     JWT_ACCESS_TOKEN_EXPIRES = 86400 * 30  # 30 days in seconds
     
     # Database resolution: supports direct DATABASE_URL or discrete DB_* parameters
