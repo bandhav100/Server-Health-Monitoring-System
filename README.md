@@ -1,6 +1,6 @@
 # 🚀 Server Health Monitoring System (SHMS)
 
-### Real-Time Infrastructure Monitoring & Automation Platform
+### Real-Time Infrastructure Monitoring
 
 A production-style server monitoring platform that collects real-time hardware metrics from multiple systems, visualizes them through interactive dashboards, and continuously monitors infrastructure health using automated health checks and cloud-based public access.
 
