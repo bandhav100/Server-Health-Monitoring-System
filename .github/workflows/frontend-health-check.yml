@@ -1,0 +1,26 @@
+name: SHMS Frontend Health Check
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "*/10 * * * *"
+
+jobs:
+  health-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check Frontend URL
+        run: |
+          echo "Checking Frontend..."
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" "${{ secrets.FRONTEND_URL }}")
+          echo "Status: $STATUS"
+
+          if [ "$STATUS" != "200" ] && [ "$STATUS" != "301" ] && [ "$STATUS" != "302" ]; then
+            echo "Frontend is DOWN"
+            exit 1
+          fi
+
+          echo "Frontend is UP"
