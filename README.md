@@ -40,6 +40,7 @@ The project also includes an automated cloud workflow that generates a public da
 | **Monitoring**          | Prometheus                    |
 | **Visualization**       | Grafana                       |
 | **Metrics Exporter**    | LibreHardwareMonitor Exporter & windows exporter |
+| **Secure Networking (VPN)**| TailScale                  |
 | **Containerization**    | Docker & Docker Compose       |
 | **Cloud Automation**    | Cloudflare Tunnel             |
 | **Workflow Automation** | GitHub Actions                |
