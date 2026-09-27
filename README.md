@@ -3,7 +3,7 @@
 
 Monitoring the health of multiple servers in an infrastructure is challenging because CPU, memory, disk, network, and hardware metrics are distributed across different systems. Administrators need a centralized platform to monitor server health, visualize performance, and securely access monitoring dashboards from anywhere.
 
-## Solution
+# 📌 Project Overview
 
 **SHMS (Server Health Monitoring System)** simulates a real-world production infrastructure by treating multiple **Windows systems as monitoring servers**. Each Windows machine acts as an individual server and exposes hardware and system metrics for centralized monitoring.
 
@@ -12,16 +12,6 @@ The platform collects **hardware metrics** (CPU temperature, GPU temperature, fa
 A **React + Vite** frontend displays live server status, health summaries, and analytics with **Chart.js** for real-time graphs, while **Grafana** provides production-style infrastructure dashboards. The backend uses **Flask** and **PostgreSQL** to manage server details and monitoring APIs.
 
 For secure communication between monitoring servers, **Tailscale (Zero-Trust VPN)** creates a private network, and **Cloudflare Tunnel** securely publishes the monitoring dashboard for remote access without exposing the local network. **Docker** and **Docker Compose** containerize the monitoring stack, and **GitHub Actions** automate frontend health checks and Cloudflare URL updates.
-
-# 📌 Project Overview
-
-**Server Health Monitoring System (SHMS)** is a centralized infrastructure monitoring platform built to monitor the health, availability, and performance of multiple Windows systems and servers in real time.
-
-The platform continuously collects hardware metrics such as CPU usage, Memory utilization, Disk usage, Temperature, and Network activity using **LibreHardwareMonitor Exporter**. These metrics are collected by **Prometheus**, visualized using **Grafana**, and displayed through a modern **React Dashboard** powered by a **Flask Backend** and **PostgreSQL** database.
-
-The project also includes an automated cloud workflow that generates a public dashboard URL using **Cloudflare Tunnel** and synchronizes it with GitHub repository secrets and variables.
-
----
 
 # ✨ Key Features
 
