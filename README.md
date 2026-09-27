@@ -1,15 +1,7 @@
 # 🚀 Server Health Monitoring System (SHMS)
-
-> ## 🌐 Project Link
->
-> **Live Dashboard:** `https://delaware-cardiovascular-xml-attraction.trycloudflare.com`
->
 > **Status:** Public Cloudflare Tunnel (Automatically Updated)
-
 ### Real-Time Infrastructure Monitoring & Cloud Automation Platform
-
 A production-style infrastructure monitoring platform that collects real-time hardware metrics from multiple systems, visualizes them through interactive dashboards, automates health monitoring workflows, and securely publishes the monitoring dashboard using Cloudflare Tunnel.
-
 ---
 
 # 📌 Project Overview
