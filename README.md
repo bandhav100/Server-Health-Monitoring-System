@@ -477,22 +477,6 @@ The monitoring dashboard is divided into multiple sections for infrastructure vi
 | Variable        | Purpose                                                                         |
 | --------------- | ------------------------------------------------------------------------------- |
 | `FRONTEND_LINK` | Displays the latest Cloudflare public dashboard URL inside repository settings. |
-
----
-
-# 👥 Project Team
-
-| Team Member     | Responsibility                               |
-| --------------- | -------------------------------------------- |
-| **Bandhav**     | Infrastructure Monitoring & Cloud Automation |
-| Vinay Charan    | Product Owner & Scrum Master                 |
-| Sai Abhiram     | Lead Developer                               |
-| Navadeep        | Backend Development                          |
-| Manjunath       | Machine Learning Integration                 |
-| Nihal           | Testing & Quality Assurance                  |
-| Abhiram Krishna | Frontend Dashboard Development               |
-| Prem Kumar      | Cloud Integration & Release Coordination     |
-
 ---
 
 # 🚀 Future Enhancements
