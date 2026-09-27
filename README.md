@@ -1,8 +1,17 @@
 # 🚀 Server Health Monitoring System (SHMS)
-> **Status:** Public Cloudflare Tunnel (Automatically Updated)
-### Real-Time Infrastructure Monitoring & Cloud Automation Platform
-A production-style infrastructure monitoring platform that collects real-time hardware metrics from multiple systems, visualizes them through interactive dashboards, automates health monitoring workflows, and securely publishes the monitoring dashboard using Cloudflare Tunnel.
----
+## Problem Statement
+
+Monitoring the health of multiple servers in an infrastructure is challenging because CPU, memory, disk, network, and hardware metrics are distributed across different systems. Administrators need a centralized platform to monitor server health, visualize performance, and securely access monitoring dashboards from anywhere.
+
+## Solution
+
+**SHMS (Server Health Monitoring System)** simulates a real-world production infrastructure by treating multiple **Windows systems as monitoring servers**. Each Windows machine acts as an individual server and exposes hardware and system metrics for centralized monitoring.
+
+The platform collects **hardware metrics** (CPU temperature, GPU temperature, fan speed, voltage, and power usage) using **LibreHardwareMonitor Exporter** and **system metrics** (CPU usage, RAM, disk, network, uptime, and OS metrics) using **Windows Exporter**. **Prometheus** scrapes metrics from all simulated servers and stores them in a centralized time-series database.
+
+A **React + Vite** frontend displays live server status, health summaries, and analytics with **Chart.js** for real-time graphs, while **Grafana** provides production-style infrastructure dashboards. The backend uses **Flask** and **PostgreSQL** to manage server details and monitoring APIs.
+
+For secure communication between monitoring servers, **Tailscale (Zero-Trust VPN)** creates a private network, and **Cloudflare Tunnel** securely publishes the monitoring dashboard for remote access without exposing the local network. **Docker** and **Docker Compose** containerize the monitoring stack, and **GitHub Actions** automate frontend health checks and Cloudflare URL updates.
 
 # 📌 Project Overview
 
