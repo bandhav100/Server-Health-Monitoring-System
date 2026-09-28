@@ -2,87 +2,107 @@
 
 <div align="center">
 
-<img src="frontend/public/logo.png" alt="SHMS Logo" width="180"/>
+  <img src="frontend/public/logo.png" alt="SHMS Logo" width="180"/>
 
-### Enterprise DevOps Monitoring Platform
+## Enterprise DevOps Monitoring Platform
 
 **Real-Time Monitoring • Predictive Analytics • CI/CD Automation • Observability**
 
-<p>
+  <br/>
+
   <img src="https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black"/>
   <img src="https://img.shields.io/badge/Flask-000000?style=for-the-badge&logo=flask&logoColor=white"/>
   <img src="https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white"/>
   <img src="https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white"/>
-</p>
 
-<p>
+  <br/>
+
   <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white"/>
   <img src="https://img.shields.io/badge/Jenkins-D24939?style=for-the-badge&logo=jenkins&logoColor=white"/>
   <img src="https://img.shields.io/badge/Prometheus-E6522C?style=for-the-badge&logo=prometheus&logoColor=white"/>
   <img src="https://img.shields.io/badge/Grafana-F46800?style=for-the-badge&logo=grafana&logoColor=white"/>
   <img src="https://img.shields.io/badge/Cloudflare_Tunnel-F38020?style=for-the-badge&logo=cloudflare&logoColor=white"/>
-</p>
-
-<p>
-  <img src="https://img.shields.io/github/stars/bandhav100/Server-Health-Monitoring-System?style=flat-square"/>
-  <img src="https://img.shields.io/github/forks/bandhav100/Server-Health-Monitoring-System?style=flat-square"/>
-  <img src="https://img.shields.io/github/last-commit/bandhav100/Server-Health-Monitoring-System?style=flat-square"/>
-  <img src="https://img.shields.io/github/repo-size/bandhav100/Server-Health-Monitoring-System?style=flat-square"/>
-  <img src="https://img.shields.io/github/languages/top/bandhav100/Server-Health-Monitoring-System?style=flat-square"/>
-</p>
 
 </div>
 
 ---
 
-## 📖 Overview
+# 📖 Overview
 
-**Server Health Monitoring System (SHMS)** is a production-style DevOps monitoring platform that continuously monitors multiple Windows machines in real time.
+**Server Health Monitoring System (SHMS)** is a full-stack DevOps monitoring platform designed to monitor multiple Windows machines as servers in real time. The project provides live infrastructure monitoring, predictive analytics, automated deployment, and centralized observability through a modern monitoring stack.
 
-Instead of Linux servers, SHMS treats **Windows systems as monitored servers** using **Windows Exporter** and **LibreHardwareMonitor Exporter**. Metrics are scraped by **Prometheus**, stored in **PostgreSQL**, visualized through a **React Dashboard** and **Grafana**, and analyzed using a **FastAPI Machine Learning Engine**. The complete deployment workflow is automated with **Docker**, **Jenkins**, **GitHub**, and **Cloudflare Tunnel**.
+SHMS collects system and hardware metrics using **Windows Exporter** and **LibreHardwareMonitor Exporter**, scrapes metrics through **Prometheus**, stores monitoring data in **PostgreSQL**, visualizes dashboards with **React** and **Grafana**, and predicts server health using a **FastAPI Machine Learning Engine**.
 
----
-
-## ✨ Features
-
-| Feature                         | Description                                                     |
-| ------------------------------- | --------------------------------------------------------------- |
-| 📊 **Live Monitoring**          | CPU, RAM, Disk, Network, Temperature & Uptime monitoring.       |
-| 🖥️ **Server Management**       | Monitor multiple Windows systems with online/offline detection. |
-| 🚨 **Alerts**                   | Real-time health alerts and server status notifications.        |
-| 📈 **Analytics**                | Historical metrics, performance trends, and reports.            |
-| 🤖 **ML Predictions**           | Predict server health as Healthy, Warning, or Critical.         |
-| 🐳 **Containerized Deployment** | Docker Compose monitoring stack.                                |
-| ⚙️ **CI/CD Automation**         | Jenkins pipeline for automated deployment.                      |
-| 🌐 **Public Deployment**        | Cloudflare Tunnel for secure live dashboard access.             |
+The entire deployment workflow is automated using **Docker**, **Jenkins CI/CD**, **GitHub**, and **Cloudflare Tunnel**.
 
 ---
 
-## 🖼️ Dashboard Preview
+# ✨ Project Features
 
-> Replace these placeholders with your SHMS screenshots after deployment.
+### 📊 Real-Time Monitoring
 
-### 🟢 Live Monitoring Dashboard
+* Live CPU usage monitoring.
+* Memory (RAM) monitoring.
+* Disk usage monitoring.
+* Network traffic monitoring.
+* System uptime monitoring.
+* Hardware temperature monitoring.
 
-<p align="center">
-  <img src="frontend/public/logo.png" width="750"/>
-</p>
+### 🖥️ Server Management
 
-### 📈 Analytics Dashboard
+* Monitor multiple Windows systems as servers.
+* Online and offline server detection.
+* Server status dashboard.
+* Hardware resource monitoring.
 
-<p align="center">
-  <img src="frontend/public/logo.png" width="750"/>
-</p>
+### 🚨 Alert Management
 
-### 📊 Grafana Dashboard
+* Real-time health alerts.
+* Resource usage alerts.
+* Server availability notifications.
+* Monitoring event logs.
 
-<p align="center">
-  <img src="frontend/public/logo.png" width="750"/>
-</p>
+### 📈 Analytics & Reports
+
+* Historical performance analytics.
+* Resource utilization reports.
+* Monitoring trends.
+* Performance dashboard.
+
+### 🤖 Machine Learning Predictions
+
+* Predict server health status.
+* Healthy, Warning and Critical classification.
+* Dashboard prediction visualization.
+
+### ⚙️ DevOps Automation
+
+* Dockerized deployment.
+* Jenkins CI/CD pipeline.
+* Cloudflare Tunnel automation.
+* Automated GitHub deployment updates.
 
 ---
 
-## 🏗️ System Architecture
+# 🛠️ Technology Stack
+
+| Category                    | Technology                                      |
+| --------------------------- | ----------------------------------------------- |
+| **Frontend**                | React, Vite, Tailwind CSS, Recharts             |
+| **Backend API**             | Flask (Python)                                  |
+| **Machine Learning Engine** | FastAPI, Python                                 |
+| **Database**                | PostgreSQL                                      |
+| **Monitoring**              | Prometheus                                      |
+| **Visualization**           | Grafana                                         |
+| **Hardware Metrics**        | Windows Exporter, LibreHardwareMonitor Exporter |
+| **Containerization**        | Docker, Docker Compose                          |
+| **CI/CD**                   | Jenkins                                         |
+| **Deployment**              | Cloudflare Tunnel                               |
+| **Version Control**         | Git & GitHub                                    |
+
+---
+
+# 🏗️ System Architecture
 
 ```text
                     Windows Machines
@@ -112,30 +132,12 @@ Instead of Linux servers, SHMS treats **Windows systems as monitored servers** u
 
 ---
 
-## 🛠️ Tech Stack
-
-| Category                 | Technologies                                    |
-| ------------------------ | ----------------------------------------------- |
-| 🎨 **Frontend**          | React, Vite, Tailwind CSS, Recharts             |
-| ⚡ **Backend API**        | Flask REST API                                  |
-| 🤖 **Machine Learning**  | FastAPI, Python                                 |
-| 🗄️ **Database**         | PostgreSQL                                      |
-| 📊 **Monitoring**        | Prometheus                                      |
-| 📈 **Visualization**     | Grafana                                         |
-| 🖥️ **Hardware Metrics** | Windows Exporter, LibreHardwareMonitor Exporter |
-| 🐳 **Containers**        | Docker, Docker Compose                          |
-| ⚙️ **CI/CD**             | Jenkins                                         |
-| 🌐 **Deployment**        | Cloudflare Tunnel                               |
-| 🔧 **Version Control**   | Git & GitHub                                    |
-
----
-
-## 📂 Project Structure
+# 📂 Project Structure
 
 ```text
 Server-Health-Monitoring-System/
 │
-├── .github/                  # GitHub Actions & Workflows
+├── .github/                  # GitHub Actions
 ├── backend/                  # Flask Backend API
 ├── frontend/                 # React + Vite Dashboard
 ├── grafana/                  # Grafana Dashboards
@@ -152,82 +154,84 @@ Server-Health-Monitoring-System/
 
 ---
 
-## 📊 Monitoring Stack
+# 📊 Monitoring Stack
 
-### Prometheus
+## Prometheus
 
-Prometheus continuously scrapes metrics from:
+Prometheus is responsible for collecting and scraping monitoring metrics from different exporters and services.
+
+**Metrics collected include:**
+
+* CPU Usage
+* RAM Usage
+* Disk Usage
+* Network Throughput
+* System Uptime
+* Hardware Temperature
+* Fan Speed
+* Server Availability
+
+### Exporters Used
 
 * Windows Exporter
 * LibreHardwareMonitor Exporter
-* Flask Metrics Endpoint
-* Prometheus Server
-
-**Collected Metrics**
-
-* CPU Usage
-* Memory Usage
-* Disk Utilization
-* Network Throughput
-* Temperature
-* Fan Speed
-* Uptime
-* Server Availability
 
 ---
 
-### Grafana
+## Grafana
 
-Grafana provides interactive dashboards for:
+Grafana provides interactive dashboards for monitoring infrastructure health.
 
-* CPU Monitoring
-* Memory Monitoring
-* Disk Usage
-* Network Monitoring
-* Temperature Monitoring
-* Historical Performance
-* Server Availability
+**Available Dashboards**
 
----
-
-## 🖥️ Dashboard Modules
-
-| Module             | Description                       |
-| ------------------ | --------------------------------- |
-| 🟢 Live Monitoring | Real-time server metrics          |
-| 🖥️ Servers        | Connected server status           |
-| 🚨 Alerts          | Health alerts and notifications   |
-| 📈 Analytics       | Resource utilization analytics    |
-| 🤖 Predictions     | Machine learning predictions      |
-| 📄 Reports         | Historical monitoring reports     |
-| 🐳 Docker          | Docker container monitoring       |
-| 📊 Grafana         | Embedded Grafana dashboards       |
-| 📜 Logs            | Server logs and monitoring events |
-| ⚙️ Settings        | Dashboard configuration           |
+* CPU Monitoring Dashboard
+* Memory Monitoring Dashboard
+* Disk Usage Dashboard
+* Network Monitoring Dashboard
+* Temperature Dashboard
+* Historical Performance Dashboard
+* Server Availability Dashboard
 
 ---
 
-## 🐳 Docker Deployment
+# 🖥️ Dashboard Modules
 
-The complete monitoring platform runs with **Docker Compose**.
+| Module             | Description                                        |
+| ------------------ | -------------------------------------------------- |
+| 🟢 Live Monitoring | Displays real-time server metrics.                 |
+| 🖥️ Servers        | Shows connected Windows systems and server status. |
+| 🚨 Alerts          | Displays server health alerts and notifications.   |
+| 📈 Analytics       | Visualizes resource utilization and trends.        |
+| 🤖 Predictions     | Displays machine learning prediction results.      |
+| 📄 Reports         | Historical monitoring reports and summaries.       |
+| 🐳 Docker          | Docker container monitoring and status.            |
+| 📊 Grafana         | Embedded Grafana monitoring dashboards.            |
+| 📜 Logs            | Monitoring events and server logs.                 |
+| ⚙️ Settings        | Dashboard configuration and preferences.           |
 
-### Services
+---
+
+# 🐳 Docker Deployment
+
+The complete monitoring platform is containerized using **Docker Compose**.
+
+## Running Services
 
 | Service           | Port     |
 | ----------------- | -------- |
 | React Frontend    | **5173** |
 | Flask Backend     | **8081** |
 | FastAPI ML Engine | **8000** |
-| Grafana           | **3000** |
-| Prometheus        | **9090** |
+| Grafana Dashboard | **3000** |
+| Prometheus Server | **9090** |
 
-### Start the Stack
+### Start Monitoring Stack
 
 ```bash
 docker compose up -d
 ```
 
-### Stop the Stack
+### Stop Monitoring Stack
 
 ```bash
 docker compose down
@@ -241,20 +245,26 @@ docker ps
 
 ---
 
-## ⚙️ Jenkins CI/CD Pipeline
+# ⚙️ Jenkins CI/CD Workflow
 
-Jenkins automates the deployment of the SHMS monitoring platform.
+Jenkins automates the deployment process from code changes to a running monitoring platform.
 
-### Pipeline Workflow
+## CI/CD Workflow
 
 ```text
 GitHub Repository
         │
         ▼
- Jenkins Pipeline
+   Jenkins Pipeline
+        │
+        ▼
+ Checkout Source Code
         │
         ▼
  Install Dependencies
+        │
+        ▼
+ Build Frontend & Backend
         │
         ▼
  Build Docker Images
@@ -263,36 +273,39 @@ GitHub Repository
  Docker Compose Deployment
         │
         ▼
- Cloudflare Tunnel
+ Health Check Verification
+        │
+        ▼
+ Cloudflare Tunnel Deployment
         │
         ▼
  Live SHMS Dashboard
 ```
 
-### Pipeline Stages
+### Jenkins Pipeline Stages
 
-* Repository Checkout
-* Dependency Installation
-* Frontend Build
-* Backend Build
-* Docker Image Build
-* Docker Compose Deployment
-* Health Check Verification
-* Deployment Success
+1. Checkout Repository
+2. Install Project Dependencies
+3. Build React Frontend
+4. Build Flask Backend
+5. Build Docker Images
+6. Deploy Containers using Docker Compose
+7. Verify Running Services
+8. Publish Live Deployment
 
 ---
 
-## 🤖 Machine Learning Prediction
+# 🤖 Machine Learning Workflow
 
-The FastAPI ML Engine predicts server health using collected monitoring metrics.
+The FastAPI Machine Learning Engine analyzes monitoring metrics and predicts server health.
 
-### API Endpoint
+## Prediction Endpoint
 
 ```http
 POST /predict/dashboard
 ```
 
-### Prediction Inputs
+## Prediction Input Metrics
 
 * CPU Usage
 * Memory Usage
@@ -301,19 +314,43 @@ POST /predict/dashboard
 * Network Activity
 * System Uptime
 
-### Prediction Output
+## Prediction Output
 
-| Status      | Meaning                            |
-| ----------- | ---------------------------------- |
-| 🟢 Healthy  | Server operating normally          |
-| 🟡 Warning  | Resource utilization is increasing |
-| 🔴 Critical | Immediate attention required       |
+| Status      | Description                         |
+| ----------- | ----------------------------------- |
+| 🟢 Healthy  | Server is operating normally.       |
+| 🟡 Warning  | Resource utilization is increasing. |
+| 🔴 Critical | Immediate attention is required.    |
 
 ---
 
-## 🌐 Cloudflare Tunnel Automation
+# 🌐 Cloudflare Tunnel Workflow
 
-A single PowerShell script automates deployment.
+A PowerShell deployment script automates Cloudflare Tunnel deployment.
+
+## Deployment Workflow
+
+```text
+Start Docker Containers
+        │
+        ▼
+Restart Cloudflare Tunnel
+        │
+        ▼
+Generate New Public URL
+        │
+        ▼
+Update GitHub Repository Website
+        │
+        ▼
+Update GitHub Secrets & Variables
+        │
+        ▼
+Create Deployment Commit
+        │
+        ▼
+Push Changes to GitHub
+```
 
 ### Run Deployment Script
 
@@ -321,21 +358,11 @@ A single PowerShell script automates deployment.
 powershell -ExecutionPolicy Bypass -File .\start-shms.ps1
 ```
 
-### Automated Tasks
-
-* Start Docker Containers
-* Restart Cloudflare Tunnel
-* Generate New Public URL
-* Update GitHub Repository Website
-* Update GitHub Secrets & Variables
-* Create Deployment Commit
-* Push Changes to GitHub
-
 ---
 
-## 🚀 Quick Start
+# 🚀 Quick Start
 
-### Clone Repository
+## Clone Repository
 
 ```bash
 git clone https://github.com/bandhav100/Server-Health-Monitoring-System.git
@@ -343,7 +370,9 @@ git clone https://github.com/bandhav100/Server-Health-Monitoring-System.git
 cd Server-Health-Monitoring-System
 ```
 
-### Start Backend
+---
+
+## Backend Setup
 
 ```bash
 cd backend
@@ -353,7 +382,11 @@ pip install -r requirements.txt
 python app.py
 ```
 
-### Start Frontend
+Backend runs on **http://localhost:8081**
+
+---
+
+## Frontend Setup
 
 ```bash
 cd frontend
@@ -363,7 +396,11 @@ npm install
 npm run dev
 ```
 
-### Start ML Engine
+Frontend runs on **http://localhost:5173**
+
+---
+
+## ML Engine Setup
 
 ```bash
 cd ml-engine
@@ -373,7 +410,11 @@ pip install -r requirements.txt
 uvicorn main:app --reload --port 8000
 ```
 
-### Start Monitoring Stack
+ML Engine runs on **http://localhost:8000**
+
+---
+
+## Start Monitoring Stack
 
 ```bash
 docker compose up -d
@@ -381,7 +422,7 @@ docker compose up -d
 
 ---
 
-## 📈 Monitoring Workflow
+# 🔄 Monitoring Workflow
 
 ```text
 Windows Exporter
@@ -392,16 +433,16 @@ LibreHardwareMonitor Exporter
  Prometheus Scrapes Metrics
         │
         ▼
-    Flask Backend API
+ Flask Backend API
         │
         ▼
  PostgreSQL Database
         │
         ▼
-  React Dashboard
+ React Dashboard
         │
         ▼
- FastAPI ML Predictions
+ FastAPI ML Prediction Engine
         │
         ▼
  Grafana Dashboards
@@ -409,22 +450,23 @@ LibreHardwareMonitor Exporter
 
 ---
 
-## 📌 Project Highlights
+# 📌 Project Highlights
 
-* Enterprise-style DevOps monitoring platform.
-* Real-time Windows server monitoring.
-* Prometheus + Grafana observability stack.
-* Dockerized deployment with Docker Compose.
-* Jenkins CI/CD automation pipeline.
-* Machine Learning based server health prediction.
+* Real-time Windows infrastructure monitoring.
+* Prometheus-based metrics collection.
+* Grafana dashboards for observability.
+* Flask REST API with PostgreSQL backend.
+* FastAPI machine learning prediction engine.
+* Dockerized monitoring stack with Docker Compose.
+* Jenkins CI/CD automated deployment pipeline.
 * Cloudflare Tunnel automated public deployment.
 
 ---
 
 <div align="center">
 
-### ⭐ If you found this project useful, consider giving it a Star!
+## 💙 Developed by Bandhav
 
-**Built to learn real-world DevOps, Monitoring, CI/CD, and Observability through a production-style project.**
+**B V Raju Institute of Technology (BVRIT)**
 
 </div>
