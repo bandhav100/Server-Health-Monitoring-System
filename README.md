@@ -523,4 +523,4 @@ Infrastructure Monitoring â€¢ Cloud Automation â€¢ Backend Development �
 
 The first query should return `1`. The second should return process metrics including `windows_process_cpu_time_total`.
 
-> **Live Dashboard:** https://eminem-moment-mini-dns.trycloudflare.com
+> **Live Dashboard:** https://allied-mom-factors-impressive.trycloudflare.com
