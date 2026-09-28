@@ -1,8 +1,8 @@
-<<<<<<< HEAD
-# 🚀 Server Health Monitoring System (SHMS)
+﻿<<<<<<< HEAD
+# ðŸš€ Server Health Monitoring System (SHMS)
 ## Problem Statement 
 =======
-﻿<<<<<<< HEAD
+ï»¿<<<<<<< HEAD
 #Server-Health-Monitoring-System
 =======
 # React + TypeScript + Vite
@@ -10,7 +10,7 @@
 
 Monitoring the health of multiple servers in an infrastructure is challenging because CPU, memory, disk, network, and hardware metrics are distributed across different systems. Administrators need a centralized platform to monitor server health, visualize performance, and securely access monitoring dashboards from anywhere.
 
-# 📌 Project Overview
+# ðŸ“Œ Project Overview
 
 **SHMS (Server Health Monitoring System)** simulates a real-world production infrastructure by treating multiple **Windows systems as monitoring servers**. Each Windows machine acts as an individual server and exposes hardware and system metrics for centralized monitoring.
 
@@ -20,23 +20,23 @@ A **React + Vite** frontend displays live server status, health summaries, and a
 
 For secure communication between monitoring servers, **Tailscale (Zero-Trust VPN)** creates a private network, and **Cloudflare Tunnel** securely publishes the monitoring dashboard for remote access without exposing the local network. **Docker** and **Docker Compose** containerize the monitoring stack, and **GitHub Actions** automate frontend health checks and Cloudflare URL updates.
 
-# ✨ Key Features
+# âœ¨ Key Features
 
-* 📊 Real-time infrastructure monitoring dashboard.
-* 🖥️ Monitor multiple Windows systems simultaneously.
-* 🌡️ Live CPU, RAM, Disk, Temperature, and Network metrics.
-* 📈 Prometheus-based metrics collection.
-* 📉 Grafana performance dashboards.
-* 🗄️ PostgreSQL database integration.
-* 🐳 Fully Dockerized multi-container deployment.
-* ☁️ Public frontend deployment using Cloudflare Tunnel.
-* 🤖 GitHub Actions automated frontend health checks.
-* 🔄 Automatic Cloudflare URL synchronization with GitHub repository variables.
-* 📋 Server status and infrastructure overview dashboard.
+* ðŸ“Š Real-time infrastructure monitoring dashboard.
+* ðŸ–¥ï¸ Monitor multiple Windows systems simultaneously.
+* ðŸŒ¡ï¸ Live CPU, RAM, Disk, Temperature, and Network metrics.
+* ðŸ“ˆ Prometheus-based metrics collection.
+* ðŸ“‰ Grafana performance dashboards.
+* ðŸ—„ï¸ PostgreSQL database integration.
+* ðŸ³ Fully Dockerized multi-container deployment.
+* â˜ï¸ Public frontend deployment using Cloudflare Tunnel.
+* ðŸ¤– GitHub Actions automated frontend health checks.
+* ðŸ”„ Automatic Cloudflare URL synchronization with GitHub repository variables.
+* ðŸ“‹ Server status and infrastructure overview dashboard.
 
 ---
 
-# 🛠️ Technology Stack
+# ðŸ› ï¸ Technology Stack
 
 | Layer                   | Technology                    |
 | ----------------------- | ----------------------------- |
@@ -54,83 +54,83 @@ For secure communication between monitoring servers, **Tailscale (Zero-Trust VPN
 
 ---
 
-# 🏗️ System Architecture
+# ðŸ—ï¸ System Architecture
 
 ```text
                     User Browser
-                         │
-                         ▼
+                         â”‚
+                         â–¼
               Cloudflare Tunnel (Public URL)
-                         │
-                         ▼
+                         â”‚
+                         â–¼
             React Frontend Dashboard (Docker)
-                         │
-                         ▼
+                         â”‚
+                         â–¼
                Flask Backend REST API
-                         │
-                         ▼
+                         â”‚
+                         â–¼
                 PostgreSQL Database
-                         ▲
-                         │
+                         â–²
+                         â”‚
                 Prometheus Server
-                         ▲
-                         │
+                         â–²
+                         â”‚
      LibreHardwareMonitor Exporter
-                         ▲
-                         │
+                         â–²
+                         â”‚
           Windows Systems / Servers
 ```
 
 ---
 
-# 📂 Project Structure
+# ðŸ“‚ Project Structure
 
 ```text
 Server-Health-Monitoring-System/
-│
-├── frontend/
-│   ├── src/
-│   ├── public/
-│   ├── components/
-│   ├── pages/
-│   ├── package.json
-│   └── Dockerfile
-│
-├── backend/
-│   ├── app.py
-│   ├── routes/
-│   ├── services/
-│   ├── models/
-│   ├── utils/
-│   ├── requirements.txt
-│   └── Dockerfile
-│
-├── prometheus/
-│   └── prometheus.yml
-│
-├── grafana/
-│   ├── dashboards/
-│   └── provisioning/
-│
-├── exporter/
-│   └── LibreHardwareMonitor Exporter
-│
-├── postgres/
-│
-├── .github/
-│   └── workflows/
-│       └── frontend-health-check.yml
-│
-├── docker-compose.yml
-├── start-shms.ps1
-├── nginx.conf
-├── README.md
-└── assets/
+â”‚
+â”œâ”€â”€ frontend/
+â”‚   â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ public/
+â”‚   â”œâ”€â”€ components/
+â”‚   â”œâ”€â”€ pages/
+â”‚   â”œâ”€â”€ package.json
+â”‚   â””â”€â”€ Dockerfile
+â”‚
+â”œâ”€â”€ backend/
+â”‚   â”œâ”€â”€ app.py
+â”‚   â”œâ”€â”€ routes/
+â”‚   â”œâ”€â”€ services/
+â”‚   â”œâ”€â”€ models/
+â”‚   â”œâ”€â”€ utils/
+â”‚   â”œâ”€â”€ requirements.txt
+â”‚   â””â”€â”€ Dockerfile
+â”‚
+â”œâ”€â”€ prometheus/
+â”‚   â””â”€â”€ prometheus.yml
+â”‚
+â”œâ”€â”€ grafana/
+â”‚   â”œâ”€â”€ dashboards/
+â”‚   â””â”€â”€ provisioning/
+â”‚
+â”œâ”€â”€ exporter/
+â”‚   â””â”€â”€ LibreHardwareMonitor Exporter
+â”‚
+â”œâ”€â”€ postgres/
+â”‚
+â”œâ”€â”€ .github/
+â”‚   â””â”€â”€ workflows/
+â”‚       â””â”€â”€ frontend-health-check.yml
+â”‚
+â”œâ”€â”€ docker-compose.yml
+â”œâ”€â”€ start-shms.ps1
+â”œâ”€â”€ nginx.conf
+â”œâ”€â”€ README.md
+â””â”€â”€ assets/
 ```
 
 ---
 
-# 📊 Dashboard Overview
+# ðŸ“Š Dashboard Overview
 
 The SHMS dashboard provides a centralized view of infrastructure health.
 
@@ -149,7 +149,7 @@ The SHMS dashboard provides a centralized view of infrastructure health.
 
 ---
 
-# 📈 Monitoring Components
+# ðŸ“ˆ Monitoring Components
 
 ## Prometheus
 
@@ -195,7 +195,7 @@ Grafana visualizes metrics collected by Prometheus through interactive dashboard
 
 ---
 
-# 📊 PromQL Queries Used
+# ðŸ“Š PromQL Queries Used
 
 ## CPU Usage
 
@@ -238,7 +238,7 @@ rate(windows_net_bytes_total[1m])
 
 ---
 
-# 🐳 Docker Deployment
+# ðŸ³ Docker Deployment
 
 The complete monitoring stack is deployed using Docker Compose.
 
@@ -255,7 +255,7 @@ The complete monitoring stack is deployed using Docker Compose.
 
 ---
 
-# ⚙️ Local Setup Guide
+# âš™ï¸ Local Setup Guide
 
 ## 1. Clone Repository
 
@@ -290,7 +290,7 @@ shms-lhm-exporter
 
 ---
 
-# 🌐 Application Access
+# ðŸŒ Application Access
 
 | Service            | URL                     |
 | ------------------ | ----------------------- |
@@ -301,7 +301,7 @@ shms-lhm-exporter
 
 ---
 
-# ☁️ Cloud Automation
+# â˜ï¸ Cloud Automation
 
 SHMS uses **Cloudflare Tunnel** to securely publish the frontend dashboard without exposing local ports.
 
@@ -339,31 +339,31 @@ GitHub Updated Successfully!
 
 ---
 
-# 🔄 Cloud Automation Workflow
+# ðŸ”„ Cloud Automation Workflow
 
 ```text
 Laptop Starts
-      │
-      ▼
+      â”‚
+      â–¼
 Docker Desktop
-      │
-      ▼
+      â”‚
+      â–¼
 Docker Containers
-      │
-      ▼
+      â”‚
+      â–¼
 Cloudflare Tunnel
-      │
-      ▼
+      â”‚
+      â–¼
 Public Dashboard URL
-      │
-      ├── GitHub Secret (FRONTEND_URL)
-      ├── GitHub Variable (FRONTEND_LINK)
-      └── Desktop Link File
+      â”‚
+      â”œâ”€â”€ GitHub Secret (FRONTEND_URL)
+      â”œâ”€â”€ GitHub Variable (FRONTEND_LINK)
+      â””â”€â”€ Desktop Link File
 ```
 
 ---
 
-# 🤖 GitHub Actions Workflow
+# ðŸ¤– GitHub Actions Workflow
 
 SHMS includes a scheduled GitHub Actions workflow to monitor frontend availability.
 
@@ -392,7 +392,7 @@ Workflow location:
 
 ---
 
-# 🗄️ Backend API Services
+# ðŸ—„ï¸ Backend API Services
 
 The backend exposes REST APIs for monitoring and dashboard updates.
 
@@ -408,7 +408,7 @@ The backend exposes REST APIs for monitoring and dashboard updates.
 
 ---
 
-# 📊 Infrastructure Metrics
+# ðŸ“Š Infrastructure Metrics
 
 | Category       | Metrics                     |
 | -------------- | --------------------------- |
@@ -422,7 +422,7 @@ The backend exposes REST APIs for monitoring and dashboard updates.
 
 ---
 
-# 📋 Dashboard Components
+# ðŸ“‹ Dashboard Components
 
 The monitoring dashboard is divided into multiple sections for infrastructure visibility.
 
@@ -436,7 +436,7 @@ The monitoring dashboard is divided into multiple sections for infrastructure vi
 
 ---
 
-# 📸 Project Preview
+# ðŸ“¸ Project Preview
 
 ### SHMS Dashboard
 
@@ -464,7 +464,7 @@ The monitoring dashboard is divided into multiple sections for infrastructure vi
 
 ---
 
-# 🔐 Repository Automation
+# ðŸ” Repository Automation
 
 ## GitHub Repository Secret
 
@@ -479,7 +479,7 @@ The monitoring dashboard is divided into multiple sections for infrastructure vi
 | `FRONTEND_LINK` | Displays the latest Cloudflare public dashboard URL inside repository settings. |
 ---
 
-# 🚀 Future Enhancements
+# ðŸš€ Future Enhancements
 
 * Multi-server monitoring support.
 * Historical analytics dashboard.
@@ -492,7 +492,7 @@ The monitoring dashboard is divided into multiple sections for infrastructure vi
 
 ---
 
-# 📚 Learning Outcomes
+# ðŸ“š Learning Outcomes
 
 This project demonstrates practical implementation of:
 
@@ -507,24 +507,25 @@ This project demonstrates practical implementation of:
 
 ---
 
-# 👨‍💻 Author
+# ðŸ‘¨â€ðŸ’» Author
 
 **Bandhav**
 
-B.Tech – Computer Science & Engineering (Data Science)
+B.Tech â€“ Computer Science & Engineering (Data Science)
 
 **B V Raju Institute of Technology (BVRIT)**
 
-Infrastructure Monitoring • Cloud Automation • Backend Development • Monitoring Systems
+Infrastructure Monitoring â€¢ Cloud Automation â€¢ Backend Development â€¢ Monitoring Systems
 
 ---
 
-## ⭐ If you found this project useful, consider giving it a Star on GitHub.
+## â­ If you found this project useful, consider giving it a Star on GitHub.
 =======
 The first query should return `1`. The second should return process metrics including `windows_process_cpu_time_total`.
 >>>>>>> production-deployment
 
 
-> **Live Dashboard:** https://offline-distinction-john-hang.trycloudflare.com
+> **Live Dashboard:** https://large-tubes-institute-sept.trycloudflare.com
 
 >>>>>>> 07db48b (chore: SHMS live dashboard update 2026-09-28_10-17-50)
+
