@@ -12,7 +12,7 @@
 
   <br/>
 
-  [![Live Demo](https://img.shields.io/badge/Live_Demo-Visit_Dashboard-00C7B7?style=for-the-badge&logo=cloudflare&logoColor=white)](https://uni-thesaurus-venue-qualifying.trycloudflare.com)
+  [![Live Demo](https://img.shields.io/badge/Live_Demo-Visit_Dashboard-00C7B7?style=for-the-badge&logo=cloudflare&logoColor=white)](https://lamp-specially-fact-sorts.trycloudflare.com)
 
   <br/><br/>
 
