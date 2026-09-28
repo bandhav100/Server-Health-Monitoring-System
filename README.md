@@ -1,12 +1,12 @@
-﻿<<<<<<< HEAD
+﻿
 # ðŸš€ Server Health Monitoring System (SHMS)
 ## Problem Statement 
-=======
+
 ï»¿<<<<<<< HEAD
 #Server-Health-Monitoring-System
-=======
+
 # React + TypeScript + Vite
->>>>>>> 07db48b (chore: SHMS live dashboard update 2026-09-28_10-17-50)
+
 
 Monitoring the health of multiple servers in an infrastructure is challenging because CPU, memory, disk, network, and hardware metrics are distributed across different systems. Administrators need a centralized platform to monitor server health, visualize performance, and securely access monitoring dashboards from anywhere.
 
@@ -203,7 +203,7 @@ Grafana visualizes metrics collected by Prometheus through interactive dashboard
 100 - (avg by(instance)(rate(windows_cpu_time_total{mode="idle"}[2m])) * 100)
 ```
 
-<<<<<<< HEAD
+
 ## Memory Usage
 
 ```promql
@@ -520,13 +520,7 @@ Infrastructure Monitoring â€¢ Cloud Automation â€¢ Backend Development �
 ---
 
 ## â­ If you found this project useful, consider giving it a Star on GitHub.
-=======
+
 The first query should return `1`. The second should return process metrics including `windows_process_cpu_time_total`.
->>>>>>> production-deployment
 
-
-> **Live Dashboard:** https://march-mods-bold-carey.trycloudflare.com
-
->>>>>>> 07db48b (chore: SHMS live dashboard update 2026-09-28_10-17-50)
-
-
+> **Live Dashboard:** https://eminem-moment-mini-dns.trycloudflare.com
