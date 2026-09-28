@@ -112,31 +112,6 @@ The complete deployment pipeline is automated using **Docker**, **Jenkins**, **G
 | 🔧 **Version Control**   | Git & GitHub                                    |
 
 ---
-
-# 🖼️ Dashboard Preview
-
-> Replace these placeholders with actual SHMS dashboard screenshots.
-
-### 🟢 Live Monitoring Dashboard
-
-<p align="center">
-  <img src="frontend/public/logo.png" width="700"/>
-</p>
-
-### 📈 Analytics Dashboard
-
-<p align="center">
-  <img src="frontend/public/logo.png" width="700"/>
-</p>
-
-### 📊 Grafana Monitoring Dashboard
-
-<p align="center">
-  <img src="frontend/public/logo.png" width="700"/>
-</p>
-
----
-
 # 🏗️ System Architecture
 
 ```text
