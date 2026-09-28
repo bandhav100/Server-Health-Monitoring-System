@@ -1,0 +1,359 @@
+pipeline {
+    agent any
+
+    parameters {
+        string(
+            name: 'BRANCH',
+            defaultValue: 'feature/flask-backend',
+            description: 'GitHub branch to build'
+        )
+    }
+
+    options {
+        timestamps()
+        disableConcurrentBuilds()
+    }
+
+    environment {
+        PYTHON = 'C:\\Users\\bandh\\AppData\\Local\\Programs\\Python\\Python313\\python.exe'
+        DOCKER_CLI = 'C:\\Program Files\\Docker\\Docker\\resources\\bin'
+        DOCKER_CLI_ALT = 'C:\\Program Files\\Docker'
+        DOCKER_COMPOSE_PLUGIN = 'C:\\Program Files\\Docker\\cli-plugins'
+    }
+
+    stages {
+
+        stage('Clean Workspace') {
+            steps {
+                deleteDir()
+                echo 'Workspace cleaned.'
+            }
+        }
+
+        stage('Checkout GitHub Repository') {
+            steps {
+                echo "Checking out branch: ${params.BRANCH}"
+
+                git(
+                    branch: params.BRANCH,
+                    url: 'https://github.com/bandhav100/Server-Health-Monitoring-System.git'
+                )
+            }
+        }
+
+        stage('Verify Repository') {
+            steps {
+                bat '''
+                    echo ==============================
+                    echo CURRENT BRANCH
+                    echo ==============================
+
+                    git branch --show-current
+
+                    echo.
+                    echo ==============================
+                    echo LATEST COMMIT
+                    echo ==============================
+
+                    git log -1 --oneline
+
+                    echo.
+                    echo ==============================
+                    echo PROJECT CONTENT
+                    echo ==============================
+
+                    dir
+                '''
+            }
+        }
+
+        stage('Check Backend') {
+            steps {
+                bat '''
+                    echo ==============================
+                    echo BACKEND STRUCTURE
+                    echo ==============================
+
+                    if not exist backend (
+                        echo ERROR: backend folder missing
+                        exit /b 1
+                    )
+
+                    echo BACKEND FOUND
+
+                    echo.
+
+                    if exist backend\\requirements.txt (
+                        echo requirements.txt FOUND
+                    ) else (
+                        echo ERROR: requirements.txt NOT FOUND
+                        exit /b 1
+                    )
+
+                    if exist backend\\app.py (
+                        echo app.py FOUND
+                    ) else (
+                        echo ERROR: app.py NOT FOUND
+                        exit /b 1
+                    )
+
+                    if exist backend\\test_app.py (
+                        echo test_app.py FOUND
+                    ) else (
+                        echo ERROR: test_app.py NOT FOUND
+                        exit /b 1
+                    )
+
+                    echo.
+                    echo Backend files:
+                    dir backend
+                '''
+            }
+        }
+
+        stage('Python Check') {
+            steps {
+                bat '''
+                    echo ==============================
+                    echo PYTHON VERSION
+                    echo ==============================
+
+                    "%PYTHON%" --version
+
+                    echo.
+                    echo ==============================
+                    echo PIP VERSION
+                    echo ==============================
+
+                    "%PYTHON%" -m pip --version
+
+                    echo.
+                    echo ==============================
+                    echo FLASK CHECK
+                    echo ==============================
+
+                    "%PYTHON%" -c "import flask; print('Flask:', flask.__version__)"
+                '''
+            }
+        }
+
+        stage('Install Backend Dependencies') {
+            steps {
+                bat '''
+                    echo ==============================
+                    echo INSTALLING BACKEND DEPENDENCIES
+                    echo ==============================
+
+                    "%PYTHON%" -m pip install -r backend\\requirements.txt
+
+                    if errorlevel 1 (
+                        echo ERROR: Dependency installation failed
+                        exit /b 1
+                    )
+
+                    echo.
+                    echo Backend dependencies installed successfully.
+                '''
+            }
+        }
+
+        stage('Test Flask Import') {
+            steps {
+                bat '''
+                    echo ==============================
+                    echo TESTING FLASK MODULE
+                    echo ==============================
+
+                    cd backend
+
+                    "%PYTHON%" -c "import app; print('Flask module imported successfully.')"
+
+                    if errorlevel 1 (
+                        echo ERROR: Flask module import failed
+                        exit /b 1
+                    )
+
+                    echo.
+                    echo Flask module import test PASSED.
+                '''
+            }
+        }
+
+        stage('Flask Health Check') {
+            steps {
+                bat '''
+                    echo ==============================
+                    echo FLASK APPLICATION HEALTH CHECK
+                    echo ==============================
+
+                    cd backend
+
+                    "%PYTHON%" -c "import app; flask_app=app.create_app(); print('Flask application created successfully.'); print('Testing /api/health'); client=flask_app.test_client(); r=client.get('/api/health'); print('HTTP STATUS:', r.status_code); print('RESPONSE:', r.get_data(as_text=True)); assert r.status_code == 200, 'Health check failed'"
+
+                    if errorlevel 1 (
+                        echo ERROR: Flask application health check FAILED
+                        exit /b 1
+                    )
+
+                    echo.
+                    echo Flask application health check PASSED.
+                '''
+            }
+        }
+
+        stage('Run Backend Tests') {
+            steps {
+                bat '''
+                    echo ==============================
+                    echo RUNNING BACKEND TESTS
+                    echo ==============================
+
+                    cd backend
+
+                    set PYTHONIOENCODING=utf-8
+                    set PYTHONUTF8=1
+
+                    "%PYTHON%" -X utf8 test_app.py
+
+                    if errorlevel 1 (
+                        echo ERROR: Backend tests FAILED
+                        exit /b 1
+                    )
+
+                    echo.
+                    echo Backend tests PASSED.
+                '''
+            }
+        }
+
+        stage('Check Docker') {
+            steps {
+                bat '''
+                    echo ==============================
+                    echo JENKINS SERVICE ACCOUNT
+                    echo ==============================
+
+                    whoami
+
+                    echo.
+                    echo ==============================
+                    echo DOCKER PATHS
+                    echo ==============================
+
+                    where docker
+
+                    echo.
+                    echo ==============================
+                    echo DOCKER CLI
+                    echo ==============================
+
+                    docker --version
+
+                    if errorlevel 1 (
+                        echo ERROR: Docker CLI not available
+                        exit /b 1
+                    )
+
+                    echo.
+                    echo ==============================
+                    echo DOCKER COMPOSE PLUGIN FILE
+                    echo ==============================
+
+                    if exist "%DOCKER_COMPOSE_PLUGIN%\\docker-compose.exe" (
+                        echo Docker Compose plugin FOUND
+                    ) else (
+                        echo ERROR: Docker Compose plugin NOT FOUND
+                        echo Expected:
+                        echo %DOCKER_COMPOSE_PLUGIN%\\docker-compose.exe
+                        exit /b 1
+                    )
+
+                    echo.
+                    echo ==============================
+                    echo DOCKER CLI PLUGIN DIRECTORY
+                    echo ==============================
+
+                    dir "%DOCKER_COMPOSE_PLUGIN%"
+
+                    echo.
+                    echo ==============================
+                    echo DOCKER INFO
+                    echo ==============================
+
+                    docker info
+
+                    if errorlevel 1 (
+                        echo ERROR: Docker Engine is not accessible
+                        exit /b 1
+                    )
+
+                    echo.
+                    echo ==============================
+                    echo DOCKER COMPOSE
+                    echo ==============================
+
+                    docker compose version
+
+                    if errorlevel 1 (
+                        echo ERROR: Docker Compose command failed
+                        exit /b 1
+                    )
+
+                    echo.
+                    echo ==============================
+                    echo DOCKER COMPOSE DIRECT TEST
+                    echo ==============================
+
+                    "%DOCKER_COMPOSE_PLUGIN%\\docker-compose.exe" version
+
+                    if errorlevel 1 (
+                        echo ERROR: Direct Docker Compose plugin test failed
+                        exit /b 1
+                    )
+
+                    echo.
+                    echo ==============================
+                    echo DOCKER CHECK PASSED
+                    echo ==============================
+                '''
+            }
+        }
+
+        stage('Docker Compose Check') {
+            steps {
+                bat '''
+                    echo ==============================
+                    echo DOCKER COMPOSE CONFIG CHECK
+                    echo ==============================
+
+                    if exist docker-compose.yml (
+                        echo docker-compose.yml FOUND
+                        docker compose config
+                    ) else if exist compose.yml (
+                        echo compose.yml FOUND
+                        docker compose -f compose.yml config
+                    ) else (
+                        echo No Docker Compose file found in repository.
+                        echo Skipping compose config validation.
+                    )
+                '''
+            }
+        }
+    }
+
+    post {
+        success {
+            echo '========================================'
+            echo 'SHMS FLASK BACKEND PIPELINE PASSED'
+            echo "Branch: ${params.BRANCH}"
+            echo '========================================'
+        }
+
+        failure {
+            echo '========================================'
+            echo 'SHMS FLASK BACKEND PIPELINE FAILED'
+            echo "Branch: ${params.BRANCH}"
+            echo '========================================'
+        }
+    }
+}
