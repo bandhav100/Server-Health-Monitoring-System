@@ -1,0 +1,46 @@
+# =====================================================
+
+# SHMS Jenkins Required Plugins
+
+# =====================================================
+
+# Pipeline
+
+workflow-aggregator
+pipeline-stage-view
+pipeline-build-step
+
+# Git & GitHub
+
+git
+github
+github-branch-source
+git-client
+credentials
+ssh-credentials
+
+# Docker
+
+docker-workflow
+docker-plugin
+
+# Blue Ocean UI
+
+blueocean
+
+# Utility Plugins
+
+workspace-cleanup
+timestamper
+ansiColor
+build-timeout
+matrix-auth
+
+# API & HTTP
+
+http_request
+
+# Optional (Future SHMS)
+
+warnings-ng
+prometheus
