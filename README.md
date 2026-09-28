@@ -522,5 +522,13 @@ Infrastructure Monitoring â€¢ Cloud Automation â€¢ Backend Development �
 ## â­ If you found this project useful, consider giving it a Star on GitHub.
 
 The first query should return `1`. The second should return process metrics including `windows_process_cpu_time_total`.
+<<<<<<< Updated upstream
+=======
+>>>>>>> production-deployment
+
+
+> **Live Dashboard:** https://observer-real-workshop-ind.trycloudflare.com
+
+>>>>>>> Stashed changes
 
 > **Live Dashboard:** https://allied-mom-factors-impressive.trycloudflare.com

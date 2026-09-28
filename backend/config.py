@@ -32,6 +32,7 @@ class Config:
     CORS_HEADERS = "Content-Type"
     cors_env = os.getenv("CORS_ORIGINS")
     default_origins = [
+        "https://server-health-monitoring-system-1-45pe.onrender.com",
         "http://localhost:5173",
         "http://127.0.0.1:5173",
         "http://localhost:5174",

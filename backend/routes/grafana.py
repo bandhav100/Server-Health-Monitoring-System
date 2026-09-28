@@ -78,7 +78,7 @@ def get_public_grafana_base_url():
 
     # If arriving via Cloudflare tunnel domain
     if "trycloudflare.com" in host or "cloudflare" in host:
-        return f"{proto}://{host}"
+        return f"https://{host}/grafana"
 
     # If arriving via frontend proxy on port 5173
     if ":5173" in host:

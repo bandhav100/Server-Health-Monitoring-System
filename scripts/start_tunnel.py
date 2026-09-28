@@ -78,8 +78,8 @@ def persist_local_state(tunnel_url: str):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Start Cloudflare tunnel for Grafana and register with SHMS.")
-    parser.add_argument("--port", type=int, default=3001, help="Local port to tunnel (default: 3001 for Grafana)")
+    parser = argparse.ArgumentParser(description="Start Cloudflare tunnel for SHMS Application and register with backend.")
+    parser.add_argument("--port", type=int, default=5173, help="Local port to tunnel (default: 5173 for full SHMS app)")
     parser.add_argument("--backend", default="http://localhost:5000", help="SHMS backend base URL")
     args = parser.parse_args()
 
