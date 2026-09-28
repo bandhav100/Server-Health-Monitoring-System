@@ -1,0 +1,16 @@
+# Hide configuration files from GitHub language stats
+*.ts linguist-vendored
+tsconfig*.json linguist-vendored
+vite.config.js linguist-vendored
+tailwind.config.js linguist-vendored
+postcss.config.js linguist-vendored
+
+# Hide SQL procedures
+*.sql linguist-vendored
+
+# Hide Windows scripts
+*.cmd linguist-vendored
+*.bat linguist-vendored
+
+# Hide environment/config files
+.env* linguist-vendored
