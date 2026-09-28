@@ -4,27 +4,42 @@
 
   <img src="frontend/public/logo.png" alt="SHMS Logo" width="180"/>
 
-## Enterprise DevOps Monitoring Platform
+  # 🚀 Server Health Monitoring System (SHMS)
 
-**Real-Time Monitoring • Predictive Analytics • CI/CD Automation • Observability**
+  ### Production-Ready Infrastructure Monitoring Platform
+
+  **Real-Time Monitoring • Predictive Analytics • CI/CD Automation • Observability**
 
   <br/>
+
+  #### ⚛️ Application Stack
 
   <img src="https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black"/>
   <img src="https://img.shields.io/badge/Flask-000000?style=for-the-badge&logo=flask&logoColor=white"/>
   <img src="https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white"/>
   <img src="https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white"/>
 
-  <br/>
+  <br/><br/>
+
+  #### 📊 Monitoring & Observability
+
+  <img src="https://img.shields.io/badge/Prometheus-E6522C?style=for-the-badge&logo=prometheus&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Grafana-F46800?style=for-the-badge&logo=grafana&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Windows_Exporter-0078D4?style=for-the-badge&logo=windows&logoColor=white"/>
+  <img src="https://img.shields.io/badge/LibreHardwareMonitor-FF6A00?style=for-the-badge&logo=github&logoColor=white"/>
+
+  <br/><br/>
+
+  #### ⚙️ DevOps & Deployment
 
   <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white"/>
   <img src="https://img.shields.io/badge/Jenkins-D24939?style=for-the-badge&logo=jenkins&logoColor=white"/>
-  <img src="https://img.shields.io/badge/Prometheus-E6522C?style=for-the-badge&logo=prometheus&logoColor=white"/>
-  <img src="https://img.shields.io/badge/Grafana-F46800?style=for-the-badge&logo=grafana&logoColor=white"/>
   <img src="https://img.shields.io/badge/Tailscale-242424?style=for-the-badge&logo=tailscale&logoColor=white"/>
   <img src="https://img.shields.io/badge/Cloudflare_Tunnel-F38020?style=for-the-badge&logo=cloudflare&logoColor=white"/>
 
 </div>
+
+---
 
 ---
 
