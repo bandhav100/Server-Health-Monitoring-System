@@ -1,0 +1,35 @@
+[33mcommit c294b3e55e7419ab3ed7e572140bd088f0dc0f87[m
+Author: bandhav100 <24211a6707@bvrit.ac.in>
+Date:   Thu Sep 24 01:58:58 2026 +0530
+
+    Remove frontend for clean production setup
+
+[33mcommit f4faeb4c39cd14f7c760005aff835c0901962b40[m[33m ([m[1;31morigin/feature/flask-backend[m[33m, [m[1;32mfeature/flask-backend[m[33m)[m
+Author: bandhav100 <24211a6707@bvrit.ac.in>
+Date:   Sat Sep 12 22:37:14 2026 +0530
+
+    Separate frontend from Flask backend branch
+
+[33mcommit 03181fdf58f38e12a7d10f3eac1cd3f349711dff[m
+Author: bandhav100 <24211a6707@bvrit.ac.in>
+Date:   Sat Sep 12 22:33:40 2026 +0530
+
+    Update SHMS frontend
+
+[33mcommit cbec2617439548cae5f9f9c84e482cc58bb63a07[m
+Author: bandhav100 <24211a6707@bvrit.ac.in>
+Date:   Thu Sep 10 00:32:10 2026 +0530
+
+    SHMS v3.1 Enterprise Server Health Monitoring System
+
+[33mcommit 484e199313eb8e7ff54bd669a2b987364140affa[m
+Author: SAI <24211a6705@bvrit.ac.in>
+Date:   Sat Aug 8 07:37:13 2026 +0000
+
+    Add SHMSFrontend
+
+[33mcommit c23112c590556d7564a5b052d10cf8c7d3328b2c[m
+Author: Abhiramkrishna-chitturi <abhiram2997@gmail.com>
+Date:   Fri Jul 3 14:43:42 2026 +0530
+
+    Initial SHMS dashboard
