@@ -797,6 +797,7 @@ This project is developed for academic learning and enterprise DevOps practice a
 
 # ⭐ Support
 
+<<<<<<< Updated upstream
 If you like this project:
 
 * ⭐ Star this repository.
@@ -810,3 +811,8 @@ If you like this project:
   <b>🚀 Server Health Monitoring System (SHMS)</b><br/>
   Enterprise Monitoring • DevOps • Observability • Machine Learning
 </p>
+=======
+The first query should return `1`. The second should return process metrics including `windows_process_cpu_time_total`.
+
+> **Live Dashboard:** https://through-joe-sharp-betty.trycloudflare.com
+>>>>>>> Stashed changes
