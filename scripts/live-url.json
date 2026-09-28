@@ -1,13 +1,7 @@
 ﻿{
-<<<<<<< Updated upstream
-    "updated_at":  "2026-09-28 10:59:17",
-    "run_id":  639261899577435212,
-    "cloudflare_url":  "https://allied-mom-factors-impressive.trycloudflare.com",
-    "live_dashboard":  "https://allied-mom-factors-impressive.trycloudflare.com"
-=======
-    "updated_at":  "2026-09-28 10:22:12",
-    "run_id":  639261877328373055,
-    "cloudflare_url":  "https://observer-real-workshop-ind.trycloudflare.com",
-    "live_dashboard":  "https://observer-real-workshop-ind.trycloudflare.com"
->>>>>>> Stashed changes
+    "backend":  "http://localhost:8081",
+    "prometheus":  "http://localhost:9090",
+    "frontend":  "https://targeted-several-nickel-advanced.trycloudflare.com",
+    "grafana":  "http://localhost:3000",
+    "updated_at":  "2026-09-28 14:06:54"
 }

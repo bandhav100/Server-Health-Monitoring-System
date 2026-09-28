@@ -1,4 +1,4 @@
-# 🚀 Server Health Monitoring System (SHMS)
+﻿# ðŸš€ Server Health Monitoring System (SHMS)
 
 <p align="center">
   <img src="frontend/public/logo.png" alt="SHMS Logo" width="140"/>
@@ -25,7 +25,7 @@
 
 ---
 
-## 🌍 Project Overview
+## ðŸŒ Project Overview
 
 **Server Health Monitoring System (SHMS)** is an enterprise-grade infrastructure monitoring and observability platform designed to simulate a real-world production monitoring environment using multiple Windows systems as servers.
 
@@ -33,19 +33,19 @@ SHMS continuously collects CPU, memory, disk, GPU temperature, network, uptime, 
 
 The project also includes:
 
-* 🤖 Machine Learning health prediction engine.
-* 🔐 JWT Authentication.
-* 🌐 Cloudflare Tunnel for secure public dashboard access.
-* 🛡️ Tailscale Zero-Trust VPN networking.
-* 🐳 Dockerized monitoring stack.
-* 🚀 Jenkins CI/CD Pipeline.
-* ⚡ GitHub Actions automated health checks.
+* ðŸ¤– Machine Learning health prediction engine.
+* ðŸ” JWT Authentication.
+* ðŸŒ Cloudflare Tunnel for secure public dashboard access.
+* ðŸ›¡ï¸ Tailscale Zero-Trust VPN networking.
+* ðŸ³ Dockerized monitoring stack.
+* ðŸš€ Jenkins CI/CD Pipeline.
+* âš¡ GitHub Actions automated health checks.
 
 > SHMS demonstrates how enterprise organizations monitor distributed infrastructure in real time.
 
 ---
 
-# 🎯 Problem Statement
+# ðŸŽ¯ Problem Statement
 
 Monitoring server infrastructure becomes difficult when metrics are spread across multiple systems.
 
@@ -62,9 +62,9 @@ SHMS solves these challenges using a complete observability stack built with ope
 
 ---
 
-# ✨ Key Features
+# âœ¨ Key Features
 
-## 📊 Infrastructure Monitoring
+## ðŸ“Š Infrastructure Monitoring
 
 * Real-time monitoring dashboard.
 * Multi-server infrastructure monitoring.
@@ -78,7 +78,7 @@ SHMS solves these challenges using a complete observability stack built with ope
 * Fan Speed.
 * Voltage & Power Usage.
 
-## 📈 Visualization
+## ðŸ“ˆ Visualization
 
 * Grafana dashboards.
 * Interactive React charts.
@@ -88,7 +88,7 @@ SHMS solves these challenges using a complete observability stack built with ope
 * Performance Analytics.
 * Server Health Summary.
 
-## 🤖 Machine Learning
+## ðŸ¤– Machine Learning
 
 * Server health prediction.
 * CPU forecasting.
@@ -97,7 +97,7 @@ SHMS solves these challenges using a complete observability stack built with ope
 * Failure prediction API.
 * ML Dashboard.
 
-## 🔐 Security
+## ðŸ” Security
 
 * JWT Authentication.
 * Secure API communication.
@@ -105,7 +105,7 @@ SHMS solves these challenges using a complete observability stack built with ope
 * Tailscale VPN.
 * Environment-based configuration.
 
-## 🐳 DevOps
+## ðŸ³ DevOps
 
 * Docker Compose deployment.
 * Jenkins CI/CD.
@@ -115,44 +115,44 @@ SHMS solves these challenges using a complete observability stack built with ope
 
 ---
 
-# 🏗️ Enterprise Architecture
+# ðŸ—ï¸ Enterprise Architecture
 
 ```text
-                         🌐 User Browser
-                               │
-                               ▼
+                         ðŸŒ User Browser
+                               â”‚
+                               â–¼
                  Cloudflare Tunnel (HTTPS URL)
-                               │
-                               ▼
+                               â”‚
+                               â–¼
                  React + Vite Dashboard (Frontend)
-                               │
-                               ▼
+                               â”‚
+                               â–¼
               Spring Boot Backend REST API (JWT)
-                 │                      │
-                 │                      │
-                 ▼                      ▼
+                 â”‚                      â”‚
+                 â”‚                      â”‚
+                 â–¼                      â–¼
         PostgreSQL Database      FastAPI ML Engine
-                 │
-                 ▼
+                 â”‚
+                 â–¼
            Prometheus Server
-                 ▲
-      ┌──────────┴──────────┐
-      │                     │
+                 â–²
+      â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+      â”‚                     â”‚
 Windows Exporter     LibreHardwareMonitor Exporter
-      ▲                     ▲
-      └──────── Windows Monitoring Systems ────────┘
-                       │
+      â–²                     â–²
+      â””â”€â”€â”€â”€â”€â”€â”€â”€ Windows Monitoring Systems â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+                       â”‚
                  Connected through
                  Tailscale Zero-Trust VPN
-                       │
+                       â”‚
                  Jenkins CI/CD Pipeline
-                       │
+                       â”‚
               Docker Compose Deployment
 ```
 
 ---
 
-# 🛠️ Technology Stack
+# ðŸ› ï¸ Technology Stack
 
 | Category              | Technologies                                    |
 | --------------------- | ----------------------------------------------- |
@@ -170,56 +170,56 @@ Windows Exporter     LibreHardwareMonitor Exporter
 
 ---
 
-# 📂 Project Structure
+# ðŸ“‚ Project Structure
 
 ```text
 Server-Health-Monitoring-System/
-│
-├── .github/
-│   └── workflows/
-│       └── frontend-health-check.yml
-│
-├── backend/                    # Spring Boot Backend
-│
-├── frontend/                   # React + Vite Frontend
-│   ├── src/
-│   ├── public/
-│   ├── package.json
-│   ├── Dockerfile
-│   ├── vite.config.js
-│   └── tailwind.config.js
-│
-├── grafana/                    # Grafana Dashboards
-│
-├── jenkins/                    # Jenkins CI/CD
-│   ├── Jenkinsfile
-│   ├── plugins.txt
-│   ├── jenkins.env
-│   └── README.md
-│
-├── lhm-exporter/               # LibreHardwareMonitor Exporter
-│
-├── ml-engine/                  # FastAPI ML Engine
-│
-├── prometheus/                 # Prometheus Configuration
-│
-├── scripts/                    # Deployment & Tunnel Scripts
-│   ├── start_tunnel.cmd
-│   ├── live-url.json
-│   └── verify_cloudflare.py
-│
-├── README.md
-├── docker-compose.yml
-├── .gitignore
-├── .gitattributes
-└── .oxlintrc.json
+â”‚
+â”œâ”€â”€ .github/
+â”‚   â””â”€â”€ workflows/
+â”‚       â””â”€â”€ frontend-health-check.yml
+â”‚
+â”œâ”€â”€ backend/                    # Spring Boot Backend
+â”‚
+â”œâ”€â”€ frontend/                   # React + Vite Frontend
+â”‚   â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ public/
+â”‚   â”œâ”€â”€ package.json
+â”‚   â”œâ”€â”€ Dockerfile
+â”‚   â”œâ”€â”€ vite.config.js
+â”‚   â””â”€â”€ tailwind.config.js
+â”‚
+â”œâ”€â”€ grafana/                    # Grafana Dashboards
+â”‚
+â”œâ”€â”€ jenkins/                    # Jenkins CI/CD
+â”‚   â”œâ”€â”€ Jenkinsfile
+â”‚   â”œâ”€â”€ plugins.txt
+â”‚   â”œâ”€â”€ jenkins.env
+â”‚   â””â”€â”€ README.md
+â”‚
+â”œâ”€â”€ lhm-exporter/               # LibreHardwareMonitor Exporter
+â”‚
+â”œâ”€â”€ ml-engine/                  # FastAPI ML Engine
+â”‚
+â”œâ”€â”€ prometheus/                 # Prometheus Configuration
+â”‚
+â”œâ”€â”€ scripts/                    # Deployment & Tunnel Scripts
+â”‚   â”œâ”€â”€ start_tunnel.cmd
+â”‚   â”œâ”€â”€ live-url.json
+â”‚   â””â”€â”€ verify_cloudflare.py
+â”‚
+â”œâ”€â”€ README.md
+â”œâ”€â”€ docker-compose.yml
+â”œâ”€â”€ .gitignore
+â”œâ”€â”€ .gitattributes
+â””â”€â”€ .oxlintrc.json
 ```
 
 ---
 
-# ⚙️ SHMS Components
+# âš™ï¸ SHMS Components
 
-## 🖥️ Frontend
+## ðŸ–¥ï¸ Frontend
 
 **Technology**
 
@@ -257,7 +257,7 @@ Server-Health-Monitoring-System/
 
 ---
 
-## ☕ Backend
+## â˜• Backend
 
 Spring Boot backend provides REST APIs for:
 
@@ -279,7 +279,7 @@ Spring Boot backend provides REST APIs for:
 
 ---
 
-## 🤖 ML Engine
+## ðŸ¤– ML Engine
 
 FastAPI microservice predicts infrastructure health.
 
@@ -303,7 +303,7 @@ FastAPI microservice predicts infrastructure health.
 
 ---
 
-# 🐳 Docker Deployment
+# ðŸ³ Docker Deployment
 
 SHMS is fully containerized.
 
@@ -339,7 +339,7 @@ docker ps
 
 ---
 
-# 📊 Prometheus Monitoring
+# ðŸ“Š Prometheus Monitoring
 
 Prometheus scrapes metrics from every Windows monitoring system.
 
@@ -365,7 +365,7 @@ Prometheus scrapes metrics from every Windows monitoring system.
 
 ---
 
-# 📈 Grafana Dashboards
+# ðŸ“ˆ Grafana Dashboards
 
 Grafana provides enterprise visualization.
 
@@ -390,7 +390,7 @@ Grafana provides enterprise visualization.
 
 ---
 
-# 🖥️ Windows Exporter + LibreHardwareMonitor
+# ðŸ–¥ï¸ Windows Exporter + LibreHardwareMonitor
 
 SHMS monitors Windows systems as production servers.
 
@@ -417,7 +417,7 @@ Provides hardware metrics.
 
 ---
 
-# 🌐 Cloudflare Tunnel
+# ðŸŒ Cloudflare Tunnel
 
 Cloudflare Tunnel securely exposes the React dashboard without opening router ports.
 
@@ -432,17 +432,17 @@ Cloudflare Tunnel securely exposes the React dashboard without opening router po
 
 ```text
 Local React App
-      │
+      â”‚
 Cloudflare Tunnel
-      │
+      â”‚
 HTTPS Public URL
-      │
+      â”‚
 Users Access Dashboard
 ```
 
 ---
 
-# 🔒 Tailscale VPN
+# ðŸ”’ Tailscale VPN
 
 Tailscale connects multiple Windows monitoring systems.
 
@@ -455,7 +455,7 @@ Tailscale connects multiple Windows monitoring systems.
 
 ---
 
-# 🚀 Jenkins CI/CD Pipeline
+# ðŸš€ Jenkins CI/CD Pipeline
 
 SHMS includes an automated Jenkins pipeline.
 
@@ -485,14 +485,14 @@ SHMS includes an automated Jenkins pipeline.
 
 ---
 
-# ⚡ GitHub Actions
+# âš¡ GitHub Actions
 
 GitHub Actions automate frontend health verification.
 
 ### Workflow
 
 ```text
-Push → Health Check → Verify Cloudflare URL → Success
+Push â†’ Health Check â†’ Verify Cloudflare URL â†’ Success
 ```
 
 ### Automation
@@ -503,7 +503,7 @@ Push → Health Check → Verify Cloudflare URL → Success
 
 ---
 
-# 🔐 Authentication
+# ðŸ” Authentication
 
 SHMS uses JWT Authentication.
 
@@ -511,11 +511,11 @@ SHMS uses JWT Authentication.
 
 ```text
 User Login
-    │
+    â”‚
 Spring Boot
-    │
+    â”‚
 JWT Token
-    │
+    â”‚
 Authenticated APIs
 ```
 
@@ -530,7 +530,7 @@ Authenticated APIs
 
 ---
 
-# 📡 REST API Overview
+# ðŸ“¡ REST API Overview
 
 ## Dashboard APIs
 
@@ -563,7 +563,7 @@ POST /api/predictions/server
 
 ---
 
-# 🗄️ PostgreSQL Database
+# ðŸ—„ï¸ PostgreSQL Database
 
 Stores centralized monitoring information.
 
@@ -578,27 +578,27 @@ Stores centralized monitoring information.
 
 ---
 
-# 📊 Monitoring Workflow
+# ðŸ“Š Monitoring Workflow
 
 ```text
 Windows Machine
-       │
+       â”‚
 Windows Exporter
-       │
+       â”‚
 LibreHardwareMonitor Exporter
-       │
+       â”‚
 Prometheus
-       │
+       â”‚
 Spring Boot Backend
-       │
+       â”‚
 PostgreSQL
-       │
+       â”‚
 Grafana + React Dashboard
 ```
 
 ---
 
-# 🧪 Local Development Setup
+# ðŸ§ª Local Development Setup
 
 ## Clone Repository
 
@@ -689,7 +689,7 @@ http://localhost:3000
 
 ---
 
-# 🛡️ Environment Variables
+# ðŸ›¡ï¸ Environment Variables
 
 ## Frontend
 
@@ -713,7 +713,7 @@ ML_ENGINE_URL=http://localhost:8000
 
 ---
 
-# 📊 Dashboard Modules
+# ðŸ“Š Dashboard Modules
 
 * Infrastructure Health
 * Live Monitoring
@@ -728,7 +728,7 @@ ML_ENGINE_URL=http://localhost:8000
 
 ---
 
-# 📈 SHMS Monitoring Features
+# ðŸ“ˆ SHMS Monitoring Features
 
 * Real-Time Metrics.
 * Health Score.
@@ -741,7 +741,7 @@ ML_ENGINE_URL=http://localhost:8000
 
 ---
 
-# 👥 Project Team
+# ðŸ‘¥ Project Team
 
 | Team Member         | Role                              |
 | ------------------- | --------------------------------- |
@@ -756,7 +756,7 @@ ML_ENGINE_URL=http://localhost:8000
 
 ---
 
-# 🚀 Future Enhancements
+# ðŸš€ Future Enhancements
 
 * Kubernetes Deployment.
 * Redis Caching.
@@ -769,7 +769,7 @@ ML_ENGINE_URL=http://localhost:8000
 
 ---
 
-# 📚 Learning Outcomes
+# ðŸ“š Learning Outcomes
 
 This project demonstrates practical implementation of:
 
@@ -789,30 +789,31 @@ This project demonstrates practical implementation of:
 
 ---
 
-# 📜 License
+# ðŸ“œ License
 
 This project is developed for academic learning and enterprise DevOps practice at **B V Raju Institute of Technology (BVRIT)**.
 
 ---
 
-# ⭐ Support
+# â­ Support
 
 <<<<<<< Updated upstream
 If you like this project:
 
-* ⭐ Star this repository.
-* 🍴 Fork it.
-* 🐞 Open an Issue.
-* 🚀 Contribute with Pull Requests.
+* â­ Star this repository.
+* ðŸ´ Fork it.
+* ðŸž Open an Issue.
+* ðŸš€ Contribute with Pull Requests.
 
 ---
 
 <p align="center">
-  <b>🚀 Server Health Monitoring System (SHMS)</b><br/>
-  Enterprise Monitoring • DevOps • Observability • Machine Learning
+  <b>ðŸš€ Server Health Monitoring System (SHMS)</b><br/>
+  Enterprise Monitoring â€¢ DevOps â€¢ Observability â€¢ Machine Learning
 </p>
 =======
 The first query should return `1`. The second should return process metrics including `windows_process_cpu_time_total`.
 
-> **Live Dashboard:** https://through-joe-sharp-betty.trycloudflare.com
+> **Live Dashboard:** https://targeted-several-nickel-advanced.trycloudflare.com
 >>>>>>> Stashed changes
+
