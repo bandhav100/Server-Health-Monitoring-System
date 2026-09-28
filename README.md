@@ -525,7 +525,8 @@ The first query should return `1`. The second should return process metrics incl
 >>>>>>> production-deployment
 
 
-> **Live Dashboard:** https://large-tubes-institute-sept.trycloudflare.com
+> **Live Dashboard:** https://march-mods-bold-carey.trycloudflare.com
 
 >>>>>>> 07db48b (chore: SHMS live dashboard update 2026-09-28_10-17-50)
+
 
