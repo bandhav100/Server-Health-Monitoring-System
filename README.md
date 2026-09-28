@@ -519,11 +519,3 @@ docker compose up -d
 * 🌐 Cloudflare Tunnel automated public deployment.
 
 ---
-
-<div align="center">
-
-## 💙 Developed by Bandhav
-
-**B V Raju Institute of Technology (BVRIT)**
-
-</div>
