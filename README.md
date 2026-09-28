@@ -524,7 +524,7 @@ docker compose up -d
 
 <div align="center">
 
-## 💙 Developed by Bandhav
+## Developed by Bandhav
 
 **B V Raju Institute of Technology (BVRIT)**
 
