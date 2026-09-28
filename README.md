@@ -12,6 +12,10 @@
 
   <br/>
 
+  [![Live Demo](https://img.shields.io/badge/Live_Demo-Visit_Dashboard-00C7B7?style=for-the-badge&logo=cloudflare&logoColor=white)](https://nottingham-wash-fruit-strategies.trycloudflare.com)
+
+  <br/><br/>
+
   #### ⚛️ Application Stack
 
   <img src="https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black"/>
