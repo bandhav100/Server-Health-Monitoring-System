@@ -28,7 +28,9 @@
   <img src="https://img.shields.io/badge/Windows_Exporter-0078D4?style=for-the-badge&logo=windows&logoColor=white"/>
   <img src="https://img.shields.io/badge/LibreHardwareMonitor-FF6A00?style=for-the-badge&logo=github&logoColor=white"/>
   <br/><br/>
+  
   #### ⚙️ DevOps & Deployment
+  
   <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white"/>
   <img src="https://img.shields.io/badge/Jenkins-D24939?style=for-the-badge&logo=jenkins&logoColor=white"/>
   <img src="https://img.shields.io/badge/Tailscale-242424?style=for-the-badge&logo=tailscale&logoColor=white"/>
